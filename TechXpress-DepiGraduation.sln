@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechXpress-DepiGraduation", "TechXpress-DepiGraduation\TechXpress-DepiGraduation.csproj", "{F38622EF-B94E-4E5D-BA32-18D978638601}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F38622EF-B94E-4E5D-BA32-18D978638601}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F38622EF-B94E-4E5D-BA32-18D978638601}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F38622EF-B94E-4E5D-BA32-18D978638601}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F38622EF-B94E-4E5D-BA32-18D978638601}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5241A9D3-6A4C-4EF0-8547-1B07148B0D17}
+	EndGlobalSection
+EndGlobal

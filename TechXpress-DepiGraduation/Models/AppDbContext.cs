@@ -22,9 +22,6 @@ namespace TechXpress_DepiGraduation.Models
             optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=TechXpress_Ecommerce;Integrated Security=True;Pooling=False;Encrypt=True;Trust Server Certificate=True");
         }
 
-        internal EntityEntry Entry<T>(object entity)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

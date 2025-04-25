@@ -1,0 +1,34 @@
+﻿@model Category
+
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+
+<div class="row">
+
+    <h2 class=" text-center">Details of @Model.Name</h2>
+    <div class=" col-md-6 offset-3">
+        
+            <div class="form-group">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="form-control" readonly/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description"></label>
+                <textarea asp-for="Description" class="form-control disabled" readonly> </textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-info float-end"><i class="fas fa-regular fa-pencil mr-2"></i></a>
+                <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+            </div>
+
+
+      
+    </div>
+</div>
+
+

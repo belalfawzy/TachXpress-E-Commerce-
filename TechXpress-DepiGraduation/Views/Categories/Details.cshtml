@@ -7,7 +7,7 @@
 
 <div class="row">
 
-    <h2 class=" text-center">Details of @Model.Name</h2>
+    <h2 class=" text-center"  style="color: #2D2D2D;">Details of @Model.Name</h2>
     <div class=" col-md-6 offset-3">
         
             <div class="form-group">
@@ -22,8 +22,8 @@
             </div>
             <br />
             <div class="form-group">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-info float-end"><i class="fas fa-regular fa-pencil mr-2"></i></a>
-                <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn edit float-end " ><i class="fas fa-regular fa-pencil mr-2"></i></a>
+            <a asp-action="Index" class="btn back">Back</a>
             </div>
 
 

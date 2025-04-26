@@ -16,11 +16,6 @@ namespace TechXpress_DepiGraduation.Models
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<ShoppingCartItem> shoppingCardItems { get; set; }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=TechXpress_Ecommerce;Integrated Security=True;Pooling=False;Encrypt=True;Trust Server Certificate=True");
-        }
 
 
     }

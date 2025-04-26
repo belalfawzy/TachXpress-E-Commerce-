@@ -1,13 +1,13 @@
 ﻿@model Category
 
 @{
-    ViewData["Title"] = "Create Category";
+    ViewData["Title"] = "Add New Category";
 }
 
 
 <div class="row">
    
-    <h2 class=" text-center">Create Category</h2>
+    <h2 class=" text-center" style="color: #2D2D2D;">Add New Category</h2>
         <div class=" col-md-6 offset-3">
             <form asp-action="Create">
                 <div class="form-group">
@@ -22,8 +22,8 @@
                 </div>
                 <br />
                 <div class="form-group">
-                    <button type="submit" class="btn btn-outline-success float-end">Create</button>
-                    <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+                <button type="submit" class="btn create float-end" >Create</button>
+                <a asp-action="Index" class="btn back">Back</a>
                 </div>
     
 

@@ -5,7 +5,7 @@ using TechXpress_DepiGraduation.Models;
 
 namespace TechXpress_DepiGraduation
 {
-    public class Program
+    public class Program 
     {
         public static void Main(string[] args)
         {

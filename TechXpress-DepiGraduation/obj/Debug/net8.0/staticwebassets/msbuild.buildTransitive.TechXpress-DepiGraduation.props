@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\TechXpress-DepiGraduation.props" />
+</Project>

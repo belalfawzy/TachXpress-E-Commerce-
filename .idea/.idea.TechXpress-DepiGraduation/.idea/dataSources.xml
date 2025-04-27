@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="@db18146.public.databaseasp.net" uuid="b3e8a6a0-8ee4-402b-b7d4-ac4d3883fa9a">
+      <driver-ref>sqlserver.jb</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>com.jetbrains.jdbc.sqlserver.SqlServerDriver</jdbc-driver>
+      <jdbc-url>Server=db18146.public.databaseasp.net; Database=db18146; User Id=db18146; Password=Me4@3!kGSs7?; Encrypt=True; TrustServerCertificate=True; MultipleActiveResultSets=True;Connect Timeout=30;</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </component>
+</project>

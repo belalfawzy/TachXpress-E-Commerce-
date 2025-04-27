@@ -13,6 +13,10 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "D:\\DEPI\\Technical\\C#\\TachXpress-E-Commerce-\\TechXpress-DepiGraduation\\wwwroot\\images\\laptop.jpg",
+      "PackagePath": "staticwebassets\\images\\laptop.jpg"
+    },
+    {
       "Id": "D:\\DEPI\\Technical\\C#\\TachXpress-E-Commerce-\\TechXpress-DepiGraduation\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },

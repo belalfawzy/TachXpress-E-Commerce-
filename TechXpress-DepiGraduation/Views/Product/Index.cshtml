@@ -1,0 +1,31 @@
+@model IEnumerable<Product>
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>TechXpress</title>
+    
+</head>
+<body>
+<div>
+    <h2>Products</h2>
+    <div>
+        <a asp-action="Index" ></a>
+    </div>
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+        @foreach (var p in Model)
+        {
+            <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="~/images/laptop.jpg" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">@p.Name</h5>
+                    <p class="card-text">@(string.Join(" ", p.Description.Split(' ').Take(10)))...</p>
+                    <a asp-action="Details" asp-route-id="@p.Id" class="btn btn-primary">see more</a>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+</body>
+</html>

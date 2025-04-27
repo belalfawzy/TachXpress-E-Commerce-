@@ -16,7 +16,7 @@
         @foreach (var p in Model)
         {
             <div class="card" style="width: 18rem;">
-                <img class="card-img-top" src="~/images/laptop.jpg" alt="Card image cap">
+                <img class="card-img-top" src="~/images/@p.Image" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title">@p.Name</h5>
                     <p class="card-text">@(string.Join(" ", p.Description.Split(' ').Take(10)))...</p>

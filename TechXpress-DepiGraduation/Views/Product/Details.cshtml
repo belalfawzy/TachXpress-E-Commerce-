@@ -12,27 +12,24 @@
     <div class="row">
         <div class="col-md-offset-3 p-3 w-100 ">
             <div class="containe100 mb-3 ">
-                <label asp-for="Image"></label>
                 <img  class=" img-fluid" src="~/images/@Model.Image" alt="@Model.Image image"/>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="Name" class="fw-bold" ></label>
-                <p asp-for="Name" class="form-control mb-3" readonly>@Model.Name</p>
+                <p asp-for="Name" class="display-5 mb-3 text-xxl-start" readonly>@Model.Name</p>
+            </div> 
+            <div class="form-group mb-3">
+                <textarea asp-for="Description" class="form-control mb-3" readonly>@Model.Description</textarea>
             </div> 
             <div class="form group">
-                <label asp-for="Description"></label>
-                <textarea asp-for="Description" class="form-control " readonly>@Model.Description</textarea>
-            </div> 
-            <div class="form group">
-                <label asp-for="Price"></label>
-                <textarea asp-for="Price" class="form-control " readonly>@Model.Price</textarea>
+                <p asp-for="Price" class="form-control mb-3 fw-bolder text-opacity-75 text-xl-start " readonly>@Model.Price</p>
             </div>
            
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <a asp-action="Edit"></a>
                 <a asp-action="Index" class="btn edit float-end" asp-route-id="@Model.Id" readonly>
                     <i class="fas fa-regular fa-pencil mr-2"></i>
                 </a>
+                <a asp-action="delete" asp-route-id="@Model.Id" class="btn bg-danger text-light float-end">Delete</a>
             </div>
             
             

@@ -54,7 +54,7 @@ public class ProductController: Controller
 
     public async Task<IActionResult> Delete(int id)
     {
-        var p = productService.GetItemByIdAsync(id);
+        var p = await productService.GetItemByIdAsync(id);
         if (p == null) return View("Item already not found");
         await productService.DeleteAsync(id);
         return RedirectToAction(nameof(Index));
@@ -76,9 +76,9 @@ public class ProductController: Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit([Bind("Name,Description,Price,Image,color,CategoryId")]Product p)
+    public async Task<IActionResult> Edit([Bind("Name,Description,Price,Image,color,CategoryId")] Product p)
     {
-           
+
         ModelState.Remove("Categories");
 
         if (ModelState.IsValid)
@@ -89,7 +89,10 @@ public class ProductController: Controller
 
         return View(p);
     }
+
+
     
-    
-    
+
+
+
 }

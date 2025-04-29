@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TechXpress-DepiGraduation")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0b8f818e782a9c36464642cd46f1f610e88921f2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4581e1ac54c79bc3a0259d18637341ef1b931aa0")]
 [assembly: System.Reflection.AssemblyProductAttribute("TechXpress-DepiGraduation")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TechXpress-DepiGraduation")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

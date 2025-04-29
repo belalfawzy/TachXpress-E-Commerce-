@@ -3,9 +3,8 @@
 
 
 <html xmlns="http://www.w3.org/1999/html">
-<head>
+<head> 
     <title>@Model.Name</title>
-    `
 </head>
 <body>
 <div>
@@ -22,11 +21,11 @@
             </div> 
             <div class="form group">
                 <p asp-for="Price" class="form-control mb-3 fw-bolder text-opacity-75 text-xl-start " readonly>@Model.Price</p>
-            </div>
+            </div> 
            
             <div class="form-group mb-3">
                 <a asp-action="Edit"></a>
-                <a asp-action="Index" class="btn edit float-end" asp-route-id="@Model.Id" readonly>
+                <a asp-action="Edit" class="btn edit float-end" asp-route-id="@Model" readonly>
                     <i class="fas fa-regular fa-pencil mr-2"></i>
                 </a>
                 <a asp-action="delete" asp-route-id="@Model.Id" class="btn bg-danger text-light float-end">Delete</a>

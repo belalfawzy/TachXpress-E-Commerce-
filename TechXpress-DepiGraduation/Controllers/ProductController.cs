@@ -71,21 +71,20 @@ public class ProductController: Controller
     public async Task<IActionResult> Edit(int id)
     {
         var p= await productService.GetItemByIdAsync(id);
-        if (p == null) return NotFound();
+        if (p == null) return NotFound("you are in get method");
         return View(p);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit([Bind("Name,Description,Price,Image,color,CategoryId")] Product p)
+    public async Task<IActionResult> Edit([Bind("Id,Name,Description,Price")] Product p)
     {
-
+        return NotFound(p);
+      
         ModelState.Remove("Categories");
-
-        if (ModelState.IsValid)
-        {
+        
             await productService.EditAsync(p);
             return RedirectToAction(nameof(Index));
-        }
+   
 
         return View(p);
     }

@@ -9,40 +9,34 @@ namespace TechXpress_DepiGraduation.Controllers;
 public class ProductController: Controller
 {
     private readonly IProductService productService;
-    public ProductController(IProductService _productService)
+    private readonly ICategoryService _categoryService;
+    public ProductController(IProductService _productService,ICategoryService ser)
     {
         productService = _productService;
+        _categoryService = ser;
+
 
     }
     
     public async Task<IActionResult> Index()
     {
-        // var p = new Product()
-        // {
-        //     Id = 1,
-        //     Name = "Laptop",
-        //     Description = "ff fff fff fff fff ff ff ff ff ff ff fff fff ffff ff ffff ffffffff ffff fff f  fff",
-        //     Price = 120000,
-        //     Image = "kk",
-        //     color = { "red", "black", "silver" },
-        //     
-        // };
-        // await productService.CreateAsync(p);
-        //
         var products = await productService.GetAllAsync();
     
         return View(products);
     }
-    
-    public IActionResult Create()
+
+    public async Task<IActionResult> Create()
     {
+
         return View();
     }
     
     [HttpPost]
     public async Task<IActionResult> Create([Bind("Name,Description,Price,Image,color,CategoryId")]Product p)
     {
-        ModelState.Remove("Categories");
+        ViewBag.Categories = await _categoryService.GetAllAsync();
+
+        ModelState.Remove("Category");
         if (ModelState.IsValid)
         {
             await productService.CreateAsync(p);
@@ -76,17 +70,19 @@ public class ProductController: Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit([Bind("Id,Name,Description,Price")] Product p)
+    public async Task<IActionResult> Edit([Bind("Id,Name,Description,Price,Image,color,CategoryId")]Product p)
     {
-        return NotFound(p);
-      
-        ModelState.Remove("Categories");
-        
+        ModelState.Remove("Category");
+        if (ModelState.IsValid)
+        {
             await productService.EditAsync(p);
             return RedirectToAction(nameof(Index));
-   
+        }
+        else
+        {
+            return NotFound(p);
+        }
 
-        return View(p);
     }
 
 

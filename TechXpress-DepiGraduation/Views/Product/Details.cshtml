@@ -25,7 +25,7 @@
            
             <div class="form-group mb-3">
                 <a asp-action="Edit"></a>
-                <a asp-action="Edit" class="btn edit float-end" asp-route-id="@Model" readonly>
+                <a asp-action="Edit" class="btn edit float-end" asp-route-id="@Model.Id" readonly>
                     <i class="fas fa-regular fa-pencil mr-2"></i>
                 </a>
                 <a asp-action="delete" asp-route-id="@Model.Id" class="btn bg-danger text-light float-end">Delete</a>

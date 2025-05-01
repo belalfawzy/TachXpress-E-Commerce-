@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TechXpress_DepiGraduation.Data.Services;
 using TechXpress_DepiGraduation.Models;
@@ -10,6 +11,7 @@ public class ProductController: Controller
 {
     private readonly IProductService productService;
     private readonly ICategoryService _categoryService;
+
     public ProductController(IProductService _productService,ICategoryService ser)
     {
         productService = _productService;
@@ -21,24 +23,23 @@ public class ProductController: Controller
     public async Task<IActionResult> Index()
     {
         var products = await productService.GetAllAsync();
-    
         return View(products);
     }
 
     public async Task<IActionResult> Create()
     {
-
+        ViewBag.Categories = await _categoryService.GetAllAsync();
         return View();
     }
     
     [HttpPost]
     public async Task<IActionResult> Create([Bind("Name,Description,Price,Image,color,CategoryId")]Product p)
     {
-        ViewBag.Categories = await _categoryService.GetAllAsync();
 
         ModelState.Remove("Category");
         if (ModelState.IsValid)
         {
+
             await productService.CreateAsync(p);
             return RedirectToAction(nameof(Index));
         }

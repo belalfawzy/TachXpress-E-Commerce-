@@ -1,5 +1,4 @@
-@model Product
-
+@model TechXpress_DepiGraduation.Models.Product
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +8,6 @@
 </head>
 <body>
 <div class="container">
-    
     <div class="row">
         <div class="col-md-6 offset-md-3">
             <form asp-action="Create" method="post">
@@ -34,20 +32,22 @@
                     <span asp-validation-for="Image" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="color" class="form-label">Colors</label>
-                    <select asp-for="color" class="form-control" multiple>
-                        <option value="Red">Red</option>
-                        <option value="Blue">Blue</option>
-                        <option value="Green">Green</option>
-                        <option value="Black">Black</option>
-                        <option value="White">White</option>
-                    </select>
+                    <label class="form-label">Colors</label>
+                    <div id="color-container">
+                        <!-- Initial color input -->
+                        <div class="input-group mb-2 color-input-group">
+                            <input type="color" class="form-control color-input" value="#000000"/>
+                            <button type="button" class="btn btn-outline-danger remove-color">×</button>
+                        </div>
+                    </div>
+                    <button type="button" id="add-color" class="btn btn-sm btn-outline-secondary mt-2">Add Another Color</button>
+                    <!-- Hidden field to store the final color values -->
+                    <input type="hidden" asp-for="color" id="color-values" />
                     <span asp-validation-for="color" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label asp-for="CategoryId" class="form-label">Category</label>
                     <select asp-for="CategoryId" class="form-control" asp-items="@(new SelectList(ViewBag.Categories ?? new List<Category>(), nameof(Category.Id), nameof(Category.Name)))">                        <option value="">Select a category</option>
-                      <option>1</option>
                     </select>
                     <span asp-validation-for="CategoryId" class="text-danger"></span>
                 </div>
@@ -59,5 +59,47 @@
         </div>
     </div>
 </div>
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+<script>
+    $(document).ready(function() {
+        // Add new color input when button is clicked
+        $('#add-color').click(function() {
+            const container = $('#color-container');
+            const newColorGroup = `
+                    <div class="input-group mb-2 color-input-group">
+                        <input type="color" class="form-control color-input" value="#000000"/>
+                        <button type="button" class="btn btn-outline-danger remove-color">×</button>
+                    </div>`;
+            container.append(newColorGroup);
+            updateColorValues();
+        });
+
+        // Handle remove button clicks
+        $(document).on('click', '.remove-color', function() {
+            const group = $(this).closest('.color-input-group');
+            group.remove();
+            updateColorValues();
+        });
+
+        // Update hidden input whenever color inputs change
+        $(document).on('input', '.color-input', updateColorValues);
+
+        function updateColorValues() {
+            const colors = [];
+            $('.color-input').each(function() {
+                const color = $(this).val().trim();
+                if (color) {
+                    colors.push(color);
+                }
+            });
+            $('#color-values').val(colors.join(','));
+        }
+
+        // Initialize color values on page load
+        updateColorValues();
+    });
+</script>
+}
 </body>
 </html>

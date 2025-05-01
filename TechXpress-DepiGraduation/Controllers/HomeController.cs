@@ -1,31 +1,22 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using TechXpress_DepiGraduation.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using TechXpress_DepiGraduation.Data.Services;
 
-namespace TechXpress_DepiGraduation.Controllers;
-
-public class HomeController : Controller
+namespace TechXpress_DepiGraduation.Controllers
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    public class HomeController : Controller
     {
-        _logger = logger;
-    }
+        private readonly IProductService _service;
+        private readonly ICategoryService _categoryService;
+        public HomeController(IProductService service, ICategoryService categoryService)
+        {
+            _service = service;
+            _categoryService = categoryService;
+        }
+        public async Task<IActionResult> Index()
+        {
+            var products = await _service.GetAllAsync();
 
-    public IActionResult Index()
-    {
-        return View();
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(products);
+        }
     }
 }

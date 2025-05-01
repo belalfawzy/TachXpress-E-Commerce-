@@ -1,8 +1,213 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model IEnumerable<Product>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TechXpress</title>
+    <style>
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+        .navbar-brand {
+            color: #a277a6 !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #a277a6, #cba6f7);
+            color: white;
+            padding: 3rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .hero h1 {
+                font-size: 2.5rem;
+                font-weight: 700;
+                margin-bottom: 1rem;
+            }
+
+            .hero p {
+                font-size: 1.25rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .hero a.btn {
+                padding: 0.75rem 1.75rem;
+                font-size: 1rem;
+                font-weight: bold;
+                background-color: #ffffff;
+                color: #a277a6;
+                border: none;
+                border-radius: 50px;
+                transition: 0.3s ease;
+            }
+
+                .hero a.btn:hover {
+                    background-color: #f1e9f7;
+                    color: #7a428f;
+                }
+
+        .carousel-wrapper {
+            position: relative;
+        }
+
+        .product-carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 1rem;
+            padding: 1rem 0;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+            .product-carousel::-webkit-scrollbar {
+                display: none;
+            }
+
+        .product-card {
+            min-width: 260px;
+            max-width: 260px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            scroll-snap-align: start;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+            .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            }
+
+        .product-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .product-body {
+            padding: 1rem;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .product-desc {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 0.5rem;
+        }
+
+        .product-price {
+            font-weight: bold;
+            color: #a277a6;
+            margin-top: 0.5rem;
+        }
+
+        .arrow-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 10;
+            color: #a277a6;
+        }
+
+        .arrow-left {
+            left: -20px;
+        }
+
+        .arrow-right {
+            right: -20px;
+        }
+
+        .add-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .media (max-width: 576px) {
+            .hero h1
+
+        {
+            font-size: 1.8rem;
+        }
+
+        .hero p {
+            font-size: 1rem;
+        }
+
+        .product-card {
+            min-width: 85%;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+
+        <div class="hero">
+            <h1><i class="fas fa-tags me-2"></i>Discounts up to 50%</h1>
+            <p>Explore the latest tech deals and save big on top products!</p>
+            <a asp-controller="Product" asp-action="Index" class="btn">Discover All Products</a>
+        </div>
+
+        <h2 class="mb-4">Featured Products</h2>
+
+        <div class="carousel-wrapper">
+            <i class="fas fa-chevron-left arrow-btn arrow-left" onclick="scrollCarousel(-1)"></i>
+            <i class="fas fa-chevron-right arrow-btn arrow-right" onclick="scrollCarousel(1)"></i>
+
+            <div class="product-carousel" id="carousel">
+                @foreach (var p in Model)
+                {
+                    <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id" class="product-card text-decoration-none">
+                        <img src="~/images/@p.Image" alt="@p.Name" class="product-img" />
+                        <div class="product-body">
+                            <div class="product-title">@p.Name</div>
+                            <div class="product-desc">@(string.Join(" ", p.Description.Split(' ').Take(15)))...</div>
+                            <div class="product-price">$@p.Price</div>
+                        </div>
+                    </a>
+                }
+
+                <a asp-controller="Product" asp-action="Create" class="product-card add-card text-decoration-none">
+                    <i class="fas fa-plus"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function scrollCarousel(direction) {
+            const carousel = document.getElementById('carousel');
+            const scrollAmount = 300;
+            carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

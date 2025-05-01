@@ -1,0 +1,79 @@
+﻿@model List<ShoppingCartItem>
+@{
+    ViewData["Title"] = "Shopping Cart";
+    var total = ViewBag.Total as decimal? ?? 0;
+}
+
+<link rel="stylesheet" href="~/css/cart.css" />
+
+<div class="cart-container" style="padding: 2rem; background-color: #fafafa; border-radius: 16px;">
+    <h2 class="mb-4">
+        <i class="fas fa-shopping-cart me-2" style="color: #7B61FF;"></i> Your Cart
+    </h2>
+
+
+    @if (Model.Count == 0)
+    {
+        <div class="text-center p-5" style="background-color: #ffffff; border: 2px dashed #ddd; border-radius: 16px;">
+            <i class="fas fa-shopping-cart fa-4x mb-3 text-muted"></i>
+            <h4 class="text-muted mb-2">Oops! Your cart is empty.</h4>
+            <p class="mb-4">Browse our products and add some items to your cart.</p>
+            <a href="/Product" class="btn" style="background-color: #7B61FF; color: white; padding: 10px 24px; border-radius: 30px;">
+                <i class="fas fa-arrow-left me-1"></i> Continue Shopping
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="cart-grid mb-4">
+            @foreach (var item in Model)
+            {
+                <div class="cart-item" style="background-color: white; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <div class="item-info">
+                        <h5>@item.Product.Name</h5>
+                        <p class="price text-muted"><i class="fas fa-tag me-1"></i> @item.Product.Price.ToString("C")</p>
+                        <p class="subtotal text-muted"><i class="fas fa-money-bill-wave me-1"></i> @String.Format("{0:C}", item.Product.Price * item.Quantity)</p>
+                    </div>
+
+                    <div class="item-controls mt-2 d-flex align-items-center gap-2">
+                        <form asp-controller="Order" asp-action="DecreaseFromCart" asp-route-id="@item.Product.Id" method="post">
+                            <button type="submit" class="qty-btn" title="Decrease quantity">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </form>
+
+                        <span class="qty-display fw-bold">@item.Quantity</span>
+
+                        <form asp-controller="Order" asp-action="AddToCart" asp-route-id="@item.Product.Id" method="post">
+                            <button type="submit" class="qty-btn" title="Increase quantity">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </form>
+
+                        <form asp-action="DeleteItemFromCart" asp-route-id="@item.Id" method="post">
+                            <button class="delete-btn btn-danger" title="Remove item">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="cart-summary text-end">
+            <h4>Total: <strong>@total.ToString("C")</strong></h4>
+
+            <div class="mt-3 d-flex justify-content-between">
+                <a href="/Product" class="btn btn-outline-secondary" style="border-radius: 30px;">
+                    <i class="fas fa-arrow-left me-1"></i> Continue Shopping
+                </a>
+
+                <form asp-action="CompleteOrder" method="post">
+                    <button type="submit" class="btn" style="background-color: #7B61FF; color: white; padding: 10px 30px; border-radius: 30px;">
+                        <i class="fas fa-check-circle me-1"></i> Complete Order
+                    </button>
+                </form>
+            </div>
+        </div>
+    }
+</div>

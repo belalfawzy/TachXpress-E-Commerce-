@@ -15,7 +15,8 @@ namespace TechXpress_DepiGraduation.Models
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<ShoppingCartItem> shoppingCardItems { get; set; }
+        public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
+
 
 
     }

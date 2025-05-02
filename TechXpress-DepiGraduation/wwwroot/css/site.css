@@ -61,3 +61,124 @@ body {
     width: 80%;
     margin: 0 auto;
 }
+
+/* ==== Cart Page Styles ==== */
+.cart-container {
+    max-width: 900px;
+    margin: auto;
+    padding: 2.5rem;
+    background-color: #fdfdff;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.03);
+}
+
+.cart-item {
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    flex-wrap: wrap;
+}
+
+.item-info h5 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.item-info p {
+    font-size: 0.95rem;
+    color: #777;
+    margin: 0.2rem 0;
+}
+
+.delete-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background-color: #fff0f0;
+    color: #e74c3c;
+    border: none;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+    .delete-btn:hover {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+
+.qty-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background-color: #f5f4fa;
+    color: #7B61FF;
+    border: none;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+    .qty-btn:hover{
+        background-color: #7B61FF;
+        color: white;
+    }
+
+.qty-display {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0 0.75rem;
+}
+
+.cart-summary {
+    margin-top: 2rem;
+    text-align: right;
+}
+
+    .cart-summary h4 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+.btn-purple {
+    background-color: #7B61FF;
+    color: white;
+    border-radius: 30px;
+    padding: 12px 28px;
+    font-weight: 500;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-purple:hover {
+        background-color: #684ddf;
+    }
+
+.btn-outline-secondary {
+    border: 2px solid #7B61FF;
+    color: #7B61FF;
+    border-radius: 30px;
+    padding: 10px 25px;
+    font-weight: 500;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+    .btn-outline-secondary:hover {
+        background-color: #f3f0ff;
+        color: #5f49d0;
+    }

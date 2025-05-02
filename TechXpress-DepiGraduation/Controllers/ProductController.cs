@@ -20,9 +20,14 @@ public class ProductController: Controller
 
     }
     
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string searchQuery)
     {
         var products = await productService.GetAllAsync();
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            searchQuery = searchQuery.ToLower();
+            products = products.Where(p => p.Name.ToLower().Contains(searchQuery)||p.Description.ToLower().Contains(searchQuery)).ToList() ;
+        }
         return View(products);
     }
 

@@ -36,6 +36,7 @@ namespace TechXpress_DepiGraduation.Data.Base
 
         public async Task<List<T>> GetAllAsync()
             => await _context.Set<T>().ToListAsync();
+        
 
         public async Task<T> GetItemByIdAsync(int id)
             => await _context.Set<T>().FirstOrDefaultAsync(i => i.Id == id);

@@ -1,4 +1,8 @@
 @model IEnumerable<Product>
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Products";
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,43 +11,36 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
-<div class="container d-flex justify-content-center mt-3">
-    <form asp-action="Index" asp-controller="Product" method="get" class="w-50">
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search..." name="searchQuery" id="searchQuery" style="border: 2px black solid; padding: 4px;" />
-            <button class="btn btn-primary" type="submit" style="background-color: #a277a6; border: black 1px solid;">
-                <i class="fas fa-search"></i>
-            </button>
+    <div class="container m-3">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+            @foreach (var p in Model)
+            {
+                <div class="card m-3" style="width: 18rem;">
+                    <img class="card-img-top" src="~/images/@p.Image[0]" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">@p.Name</h5>
+                        <p class="card-text">@(string.Join(" ", p.Description.Split(' ').Take(10)))...</p>
+                        <p style="color: #a277a6;" class="card-text m-2 fs-2 fw-bold">$@p.Price</p>
+                        <a style="background-color: #a277a6; border: black 1px solid" asp-action="Details" asp-route-id="@p.Id" class="btn btn-primary align-self-center">see more</a>
+                        <form asp-controller="Order" asp-action="AddToCart" asp-route-id="@p.Id" method="post">
+                            <input type="hidden" name="productId" value="@p.Id" />
+                            <button type="submit" class="btn" style="background-color: #a277a6; color: white; width: 100%; border: black 1px solid; margin-top:7px;">
+                                <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
         </div>
-    </form>
-</div>
-<div class="container m-3">
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
-        @foreach (var p in Model)
+        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
         {
-        <div class="card m-3" style="width: 18rem;">
-            <img class="card-img-top" src="~/images/@p.Image" alt="Card image cap">
-            <div class="card-body">
-                <h5 class="card-title">@p.Name</h5>
-                <p class="card-text">@(string.Join(" ", p.Description.Split(' ').Take(10)))...</p>
-                <p style="color: #a277a6;" class="card-text m-2 fs-2 fw-bold">$@p.Price</p>
-                <a style="background-color: #a277a6; border: black 1px solid" asp-action="Details" asp-route-id="@p.Id" class="btn btn-primary align-self-center">see more</a>
-                <form asp-controller="Order" asp-action="AddToCart" asp-route-id="@p.Id" method="post">
-                    <input type="hidden" name="productId" value="@p.Id" />
-                    <button type="submit" class="btn" style="background-color: #a277a6; color: white; width: 100%; border: black 1px solid; margin-top:7px;">
-                        <i class="fas fa-cart-plus me-1"></i> Add to Cart
-                    </button>
-                </form>
-            </div>
-        </div>
+            <a asp-action="Create" class="btn btn-primary position-fixed align-self-center p-3" style="width: auto; bottom: 5%; right: 7%; background-color: #a277a6; border: black 3px solid">
+                <svg xmlns="http://www.w3.org/2000/svg" height="25" fill="currentColor" class="bi bi-plus-square align-self-center" viewBox="0 0 16 16">
+                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                </svg>
+            </a>
         }
     </div>
-    <a asp-action="Create" class="btn btn-primary position-fixed align-self-center p-3" style="width: auto; bottom: 5%; right: 7%; background-color: #a277a6; border: black 3px solid">
-        <svg xmlns="http://www.w3.org/2000/svg" height="25" fill="currentColor" class="bi bi-plus-square align-self-center" viewBox="0 0 16 16">
-            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
-            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-        </svg>
-    </a>
-</div>
 </body>
 </html>

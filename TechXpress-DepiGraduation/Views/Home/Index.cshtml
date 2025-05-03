@@ -1,4 +1,8 @@
 ﻿@model IEnumerable<Product>
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Products";
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,12 +11,6 @@
         body {
             background-color: #f4f6f8;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .navbar-brand {
-            color: #a277a6 !important;
-            font-weight: bold;
-            font-size: 1.5rem;
         }
 
         .hero {
@@ -186,7 +184,7 @@
                 @foreach (var p in Model)
                 {
                     <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id" class="product-card text-decoration-none">
-                        <img src="~/images/@p.Image" alt="@p.Name" class="product-img" />
+                        <img src="~/images/@p.Image[0]" alt="@p.Name" class="product-img" />
                         <div class="product-body">
                             <div class="product-title">@p.Name</div>
                             <div class="product-desc">@(string.Join(" ", p.Description.Split(' ').Take(15)))...</div>

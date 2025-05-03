@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TechXpress_DepiGraduation.Data.Services;
+using TechXpress_DepiGraduation.Data.StaticMembers;
 using TechXpress_DepiGraduation.Models;
 
 namespace TechXpress_DepiGraduation.Controllers;
@@ -38,6 +40,7 @@ public class ProductController: Controller
     }
     
     [HttpPost]
+    [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> Create([Bind("Name,Description,Price,Image,color,CategoryId")]Product p)
     {
 
@@ -51,7 +54,7 @@ public class ProductController: Controller
 
         return View(p);
     }
-
+    [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> Delete(int id)
     {
         var p = await productService.GetItemByIdAsync(id);
@@ -68,6 +71,7 @@ public class ProductController: Controller
         return View(p);
 
     }
+    [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> Edit(int id)
     {
         var p= await productService.GetItemByIdAsync(id);
@@ -76,6 +80,7 @@ public class ProductController: Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> Edit([Bind("Id,Name,Description,Price,Image,color,CategoryId")]Product p)
     {
         ModelState.Remove("Category");

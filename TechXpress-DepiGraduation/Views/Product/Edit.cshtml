@@ -1,5 +1,8 @@
 @model Product
-
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Edit Product";
+}
 
 
 <html xmlns="http://www.w3.org/1999/html">
@@ -12,7 +15,7 @@
         <div class="col-md-offset-3 p-3 w-100 ">
             <form asp-action="Edit" method="post">
             <div class="container 100 mb-3 ">
-                <img class=" img-fluid" src="~/images/@Model.Image" alt="@Model.Image image"/>
+                <img class=" img-fluid" src="~/images/@Model.Image" alt="@Model.Image[0] image"/>
             </div>
             <div class="form-group mb-3">
                 <input asp-for="Name" class="display-5 mb-3 text-xxl-start" value="@Model.Name"/>
@@ -24,7 +27,7 @@
                 <input asp-for="Price" class="form-control mb-3 fw-bolder text-opacity-75 text-xl-start " value="@Model.Price"/>
             </div>
             <div class="form group">
-                <input asp-for="Image" class="form-control mb-3 fw-bolder text-opacity-75 text-xl-start " value="@Model.Image"/>
+                <input asp-for="Image" class="form-control mb-3 fw-bolder text-opacity-75 text-xl-start " value="@Model.Image[0]"/>
             </div><div class="form group">
                 <input asp-for="color" class="form-control mb-3 fw-bolder text-opacity-75 text-xl-start " value="red"/>
             </div>

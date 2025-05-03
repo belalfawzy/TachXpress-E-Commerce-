@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TechXpress_DepiGraduation.Data.Cart;
+using TechXpress_DepiGraduation.Data.Seed;
 using TechXpress_DepiGraduation.Data.Services;
 using TechXpress_DepiGraduation.Models;
 
@@ -17,17 +18,18 @@ namespace TechXpress_DepiGraduation
             builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddScoped<ShoppingCart>(sp => ShoppingCart.GetShoppingCart(sp));
+            builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddMemoryCache();
-            builder.Services.AddAuthentication();
             builder.Services.AddAuthorization();
 
             var app = builder.Build();
@@ -41,11 +43,14 @@ namespace TechXpress_DepiGraduation
 
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+            AppDbInitializer.SeedUserAndRoleAsync(app).Wait();
 
             app.Run();
         }

@@ -33,9 +33,27 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Product</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ContactUs">Contact us</a>
                         </li>
                     </ul>
+                    <form asp-action="Index" asp-controller="Product" method="get" class="d-flex align-items-center me-3" role="search">
+                        <div class="input-group input-group-sm" style="max-width: 200px;">
+                            <input name="SearchTerm" type="text"
+                                   class="form-control border-0"
+                                   placeholder="Search..."
+                                   style="background-color: #f2f2f2; border-radius: 20px 0 0 20px; font-size: 0.9rem; height: 36px;" />
+
+                            <button type="submit"
+                                    class="btn"
+                                    style="background-color: #a277a6; color: white; border-radius: 0 20px 20px 0; height: 36px;">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                    
+
+                    <partial name="_identity" />
+
                 </div>
             </div>
         </nav>

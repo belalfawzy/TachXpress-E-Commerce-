@@ -53,6 +53,19 @@ body {
     .btn.back:hover {
         background-color: #707070;  
     }
+    /*search in nav bar */
+.search-input {
+    max-width: 160px;
+    background-color: #f2f2f2;
+    border-radius: 20px 0 0 20px;
+    font-size: 0.9rem;
+}
+
+.search-button {
+    background-color: #a277a6;
+    color: white;
+    border-radius: 0 20px 20px 0;
+}
 .card {
     background-color: #FFF;
     padding: 20px;

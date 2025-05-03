@@ -1,0 +1,42 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<AppUser> _user;
+@if (!User.Identity.IsAuthenticated)
+{
+    <a class="btn btn-ouline-success mr-2" asp-action="Login" asp-controller="Account">
+        <i class="fas fa-regular fa-arrow-right-to-bracket"></i> Login
+    </a>
+    <a class="btn btn-ouline-Secondary mr-2" asp-action="Register" asp-controller="Account">
+        <i class="fas fa-regular fa-arrow-right-to-bracket"></i> Register
+    </a>
+}
+else
+{
+    <div class="dropdown">
+        <button class="btn btn-ouline-success dropdown-toggle" id="profile-btn" data-bs-toggle="dropdown" aria-labelledby="profile-btn">
+            <i class="fas fa-person"></i> Hello, @_user.GetUserName(User)
+        </button>
+        <ul class="dropdown-menu" aria-labledby="profile-btn">
+            <li>
+                <a class=dropdown-item asp-action="ListAllOrders" asp-controller="Order">
+                    <i class="fas fa-regular fa-list-check"></i> Orders
+                </a>
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                {
+                    <a class=dropdown-item asp-action="Users" asp-controller="Account">
+                        <i class="fas fa-regular fa-users"></i> Users
+                    </a>
+
+                    <a class=dropdown-item asp-action="CreateAdmin" asp-controller="Account">
+                        <i class="fas fa-user-shield"></i> Add Admin
+                    </a>
+                }
+                <hr />
+                <form asp-action="Logout" asp-controller="Account">
+                    <button class="dropdown-item">
+                        <i class="fas fa-regular fa-arrow-right-from-bracket"></i> Logout
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div>
+}

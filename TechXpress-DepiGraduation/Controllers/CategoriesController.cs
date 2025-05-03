@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TechXpress_DepiGraduation.Data.Services;
+using TechXpress_DepiGraduation.Data.StaticMembers;
 using TechXpress_DepiGraduation.Models;
 
 namespace TechXpress_DepiGraduation.Controllers
@@ -24,6 +26,7 @@ namespace TechXpress_DepiGraduation.Controllers
             return View();
         }
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Create([Bind("Name,Description")]Category category)
         {
             ModelState.Remove("Products");
@@ -46,6 +49,7 @@ namespace TechXpress_DepiGraduation.Controllers
             }
             return View(category);
         }
+
         public async Task<IActionResult> Edit(int id)
         {
             var category = await _categoryservice.GetItemByIdAsync(id);
@@ -54,6 +58,7 @@ namespace TechXpress_DepiGraduation.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Edit([Bind("Id,Name,Description")] Category category)
         {
            
@@ -68,7 +73,7 @@ namespace TechXpress_DepiGraduation.Controllers
             return View(category);
         }
 
-
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             await _categoryservice.DeleteAsync(id);

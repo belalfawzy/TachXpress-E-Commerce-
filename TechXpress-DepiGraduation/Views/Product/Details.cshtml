@@ -1,4 +1,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Details";
+}
 <head>
     <title>@Model.Name</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -6,28 +10,31 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery for AJAX -->
 </head>
 <body>
-<div>
-    <div class="row">
-        <div class="offset-md-3 p-3 w-100">
-            <div class="container mb-3">
-                <img class="img-fluid" src="@Url.Content("~/images/" + Model.Image)" alt="@Model.Image image" />
+    <div>
+        <div class="row">
+            <div class="offset-md-3 p-3 w-100">
+                <div class="container mb-3">
+                    <img class="img-fluid" src="@Url.Content("~/images/" + Model.Image[0])" alt="@Model.Image[0] image" />
+                </div>
+                <div class="form-group mb-3">
+                    <p class="display-5 mb-3 text-xxl-start">@Model.Name</p>
+                </div>
+                <div class="form-group mb-3">
+                    <textarea class="form-control mb-3" readonly>@Model.Description</textarea>
+                </div>
+                <div class="form-group">
+                    <p class="form-control mb-3 fw-bolder text-xl-start" style="opacity: 0.75">@Model.Price</p>
+                </div>
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                {
+                    <div class="form-group mb-3">
+                        <a asp-controller="Product" asp-action="Edit" class="btn edit float-end" asp-route-id="@Model.Id">
+                            <i class="fas fa-pencil mr-2"></i>
+                        </a>
+                        <button type="button" class="btn bg-danger text-light float-end" onclick="confirmDelete(@Model.Id)">Delete</button>
+                    </div>
+                }
             </div>
-            <div class="form-group mb-3">
-                <p class="display-5 mb-3 text-xxl-start">@Model.Name</p>
-            </div>
-            <div class="form-group mb-3">
-                <textarea class="form-control mb-3" readonly>@Model.Description</textarea>
-            </div>
-            <div class="form-group">
-                <p class="form-control mb-3 fw-bolder text-xl-start" style="opacity: 0.75">@Model.Price</p>
-            </div>
-            <div class="form-group mb-3">
-                <a asp-controller="Product" asp-action="Edit" class="btn edit float-end" asp-route-id="@Model.Id">
-                    <i class="fas fa-pencil mr-2"></i>
-                </a>
-                <button type="button" class="btn bg-danger text-light float-end" onclick="confirmDelete(@Model.Id)">Delete</button>
-            </div>
-        </div>
     </div>
 </div>
 <script>

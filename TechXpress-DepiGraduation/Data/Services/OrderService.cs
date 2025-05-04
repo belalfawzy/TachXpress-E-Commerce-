@@ -22,21 +22,66 @@ namespace TechXpress_DepiGraduation.Data.Services
 
         public async Task StoreOrdersAsync(List<ShoppingCartItem> items, string userId)
         {
-            var Order = new Order(){ UserId = userId };
-            await _context.Orders.AddAsync(Order);
-            foreach(var v in items)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                var orderItem = new OrderItem()
-                {
-                    productId = v.ProductId,
-                    OrderId = Order.Id,
-                    Amount = v.Quantity,
-                    Price = v.Product.Price,
+                if (items == null || !items.Any())
+                    throw new ArgumentException("Shopping cart items cannot be null or empty.");
 
+                foreach (var item in items)
+                {
+                    if (!await _context.Products.AnyAsync(p => p.Id == item.ProductId))
+                        throw new InvalidOperationException($"Product with Id {item.ProductId} does not exist.");
+                }
+
+                var order = new Order
+                {
+                    UserId = userId,
+                    PaymentStatus = "Pending",
+                    OrderItems = new List<OrderItem>() // Initialize the collection
                 };
-                await _context.OrderItems.AddAsync(orderItem);
+                await _context.Orders.AddAsync(order);
+                await _context.SaveChangesAsync(); // Save to generate Order.Id
+
+                foreach (var item in items)
+                {
+                    var orderItem = new OrderItem
+                    {
+                        productId = item.ProductId, // Match property name (productId)
+                        OrderId = order.Id,
+                        Amount = item.Quantity,
+                        Price = item.Product.Price
+                    };
+                    order.OrderItems.Add(orderItem); // Add to navigation property
+                    await _context.OrderItems.AddAsync(orderItem); // Add to context
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
-            await _context.SaveChangesAsync();
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
+
+        public async Task<List<Order>> GetallOrders(string userId)
+        {
+            var orders = await _context.Orders.Where(o=>o.UserId==userId).ToListAsync();
+            return orders;
+        }
+
+        public async Task<Dictionary<int, List<OrderItem>>> GetorderItems(string userId)
+        {
+            var orderwithitems = await _context.Orders.Where(o => o.UserId
+                                                                  == userId).Join(_context.OrderItems, o => o.Id,
+                    ot => ot.OrderId, (o, ot) => new { OrderId = o.Id, OrderItem = ot })
+                .GroupBy(o => o.OrderId)
+                .Select(v => new KeyValuePair<int, List<OrderItem>>(v.Key, v.Select(x => x.OrderItem).ToList()))
+                .ToDictionaryAsync(d => d.Key, d => d.Value);
+            return orderwithitems;
+        }
+
     }
 }

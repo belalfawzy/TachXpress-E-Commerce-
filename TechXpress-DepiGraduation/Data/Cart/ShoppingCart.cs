@@ -83,5 +83,13 @@ namespace TechXpress_DepiGraduation.Data.Cart
             await _context.SaveChangesAsync();
         }
 
+        public async Task Makecartempty()
+        {
+            var items = _context.ShoppingCartItems
+                .Where(s => s.ShoppingCartId == ShoppingCartId);
+            _context.ShoppingCartItems.RemoveRange(items);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

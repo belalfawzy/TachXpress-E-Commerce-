@@ -38,10 +38,12 @@ namespace TechXpress_DepiGraduation.Data.Services
                 {
                     UserId = userId,
                     PaymentStatus = "Pending",
-                    OrderItems = new List<OrderItem>() // Initialize the collection
+                    OrderItems = new List<OrderItem>() 
                 };
                 await _context.Orders.AddAsync(order);
-                await _context.SaveChangesAsync(); // Save to generate Order.Id
+                
+                
+                await _context.SaveChangesAsync(); 
 
                 foreach (var item in items)
                 {
@@ -57,6 +59,7 @@ namespace TechXpress_DepiGraduation.Data.Services
                 }
 
                 await _context.SaveChangesAsync();
+                
                 await transaction.CommitAsync();
             }
             catch
@@ -76,6 +79,15 @@ namespace TechXpress_DepiGraduation.Data.Services
         {
             var orderwithitems = await _context.Orders.Where(o => o.UserId
                                                                   == userId).Join(_context.OrderItems, o => o.Id,
+                    ot => ot.OrderId, (o, ot) => new { OrderId = o.Id, OrderItem = ot })
+                .GroupBy(o => o.OrderId)
+                .Select(v => new KeyValuePair<int, List<OrderItem>>(v.Key, v.Select(x => x.OrderItem).ToList()))
+                .ToDictionaryAsync(d => d.Key, d => d.Value);
+            return orderwithitems;
+        }
+        public async Task<Dictionary<int, List<OrderItem>>> Getall()
+        {
+            var orderwithitems = await _context.Orders.Join(_context.OrderItems, o => o.Id,
                     ot => ot.OrderId, (o, ot) => new { OrderId = o.Id, OrderItem = ot })
                 .GroupBy(o => o.OrderId)
                 .Select(v => new KeyValuePair<int, List<OrderItem>>(v.Key, v.Select(x => x.OrderItem).ToList()))

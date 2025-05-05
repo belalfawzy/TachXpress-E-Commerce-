@@ -4,7 +4,7 @@ namespace TechXpress_DepiGraduation.Models
 {
     public class Addresses : IBaseEntity
     {
-        public int Id { get; set; }
+        public int Id { get; set; } 
         public string UserId { get; set; }
         public string Country { get; set; }
         public string City { get; set; }

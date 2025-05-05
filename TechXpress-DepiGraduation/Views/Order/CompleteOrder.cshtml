@@ -1,0 +1,48 @@
+@page
+@model Addresses
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Products";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkout</title>
+    <style>
+        .form-group { margin-bottom: 15px; }
+        .address-list { margin: 20px 0; }
+        .new-address-form { margin-top: 20px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+<div>
+    <h2>Checkout</h2>
+
+    <!-- Step 1: Payment Method Selection -->
+    <form asp-controller="Payment" asp-action="SelectPayment" method="post">
+        <h3>Select Payment Method</h3>
+        <div class="form-group">
+            <label>
+                <input type="radio" name="PaymentMethod" value="Visa" required /> Visa
+            </label>
+            <label>
+                <input type="radio" name="PaymentMethod" value="Cash" required /> Cash
+            </label>
+        </div>
+        <button type="submit">Continue</button>
+    </form>
+   
+   
+    
+</div>
+
+@section Scripts {
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+}
+</body>
+</html>

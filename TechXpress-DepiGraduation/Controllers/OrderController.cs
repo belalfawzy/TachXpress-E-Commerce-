@@ -58,16 +58,15 @@ namespace TechXpress_DepiGraduation.Controllers
         }
 
         [HttpPost]
-        [Authorize] 
+        [Authorize]
         public async Task<IActionResult> CompleteOrder()
         {
             var cartItems = _shoppingCart.GetShoppingCartItems();
             if (!cartItems.Any())
             {
                 TempData["Error"] = "Your cart is empty. Please add items before checking out.";
-                return NotFound("Your cart is empty. Please add items before checking out.");
+                return RedirectToAction(nameof(Index));
             }
-
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
@@ -75,20 +74,11 @@ namespace TechXpress_DepiGraduation.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            try
-            {
-                await _orderService.StoreOrdersAsync(cartItems, userId);
+            
+            TempData["CartItems"] = System.Text.Json.JsonSerializer.Serialize(cartItems);
+            TempData["UserId"] = userId.ToString();
 
-                await _shoppingCart.Makecartempty();
-
-                return View("OrderCompleted");
-            }
-
-            catch (Exception ex)
-            {
-                TempData["Error"] = "An error occurred while processing your order. Please try again.";
-                return NotFound("An error occurred while processing your order. Please try again.");
-            }
+            return RedirectToAction("SelectPayment", "Payment");
         }
 
 
@@ -96,14 +86,31 @@ namespace TechXpress_DepiGraduation.Controllers
         public async Task<IActionResult> ListAllOrders()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var role = User.IsInRole("Admin");
+            
             if (string.IsNullOrEmpty(userId))
             {
                 return RedirectToAction("Login", "Account");
             }
             
-           var orders= await _orderService.GetorderItems(userId);
-           
-           return View(orders);
+            if (!role)
+            { var  orders = await _orderService.GetorderItems(userId);
+                return View(orders);
+
+            }
+            else
+            {
+               var  orders = await _orderService.Getall();
+               return View(orders);
+
+            }
+
+            
+        }
+
+        public IActionResult OrderCompleted()
+        {
+            return View(); 
         }
         
         

@@ -35,6 +35,7 @@ namespace TechXpress_DepiGraduation.Controllers
             {
                 await _shoppingCart.AddItemToCart(item);
             }
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -75,6 +76,7 @@ namespace TechXpress_DepiGraduation.Controllers
             }
 
             
+            
             TempData["CartItems"] = System.Text.Json.JsonSerializer.Serialize(cartItems);
             TempData["UserId"] = userId.ToString();
 
@@ -95,6 +97,7 @@ namespace TechXpress_DepiGraduation.Controllers
             
             if (!role)
             { var  orders = await _orderService.GetorderItems(userId);
+                
                 return View(orders);
 
             }

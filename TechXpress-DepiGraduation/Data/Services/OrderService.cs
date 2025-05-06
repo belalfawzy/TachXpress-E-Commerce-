@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using TechXpress_DepiGraduation.Models;
 
 namespace TechXpress_DepiGraduation.Data.Services
@@ -44,17 +45,16 @@ namespace TechXpress_DepiGraduation.Data.Services
                 
                 
                 await _context.SaveChangesAsync(); 
-
                 foreach (var item in items)
                 {
                     var orderItem = new OrderItem
                     {
-                        productId = item.ProductId, // Match property name (productId)
+                        productId = item.ProductId, 
                         OrderId = order.Id,
                         Amount = item.Quantity,
                         Price = item.Product.Price
                     };
-                    order.OrderItems.Add(orderItem); // Add to navigation property
+                    order.OrderItems.Add(orderItem); 
                     await _context.OrderItems.AddAsync(orderItem); // Add to context
                 }
 
@@ -83,6 +83,14 @@ namespace TechXpress_DepiGraduation.Data.Services
                 .GroupBy(o => o.OrderId)
                 .Select(v => new KeyValuePair<int, List<OrderItem>>(v.Key, v.Select(x => x.OrderItem).ToList()))
                 .ToDictionaryAsync(d => d.Key, d => d.Value);
+            foreach (var item in orderwithitems)
+            {
+                foreach(var val in item.Value)
+                {
+                    val.Product = _context.Products.Where(p => p.Id == val.productId).FirstOrDefault();
+
+                }
+            }
             return orderwithitems;
         }
         public async Task<Dictionary<int, List<OrderItem>>> Getall()
@@ -92,6 +100,8 @@ namespace TechXpress_DepiGraduation.Data.Services
                 .GroupBy(o => o.OrderId)
                 .Select(v => new KeyValuePair<int, List<OrderItem>>(v.Key, v.Select(x => x.OrderItem).ToList()))
                 .ToDictionaryAsync(d => d.Key, d => d.Value);
+
+           
             return orderwithitems;
         }
 

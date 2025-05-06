@@ -113,6 +113,22 @@
                 var newQty = isIncrease ? currentQty + 1 : currentQty - 1;
                 updateCartUI(itemId, newQty, price);
                 updateCartCount();
+                    if ($(".cart-item").length === 0) {
+                        $(".cart-container").html(`
+                         <div class="cart-container" style="padding: 2rem; border-radius: 16px;">
+                        <h2 class="mb-4">
+                            <i class="fas fa-shopping-cart me-2" style="color: #7B61FF;"></i> Your Cart
+                        </h2>
+                        <div class="text-center p-5" style="background-color: #ffffff; border: 2px dashed #ddd; border-radius: 16px;">
+                            <i class="fas fa-shopping-cart fa-4x mb-3 text-muted"></i>
+                            <h4 class="text-muted mb-2">Oops! Your cart is empty.</h4>
+                            <p class="mb-4">Browse our products and add some items to your cart.</p>
+                            <a href="/Product" class="btn" style="background-color: #7B61FF; color: white; padding: 10px 24px; border-radius: 30px;">
+                                <i class="fas fa-arrow-left me-1"></i> Continue Shopping
+                            </a>
+                        </div>
+                        `);
+                    }
             });
         });
     });
@@ -136,6 +152,25 @@
                     success: function () {
                         $("#item-" + id).remove();
                         updateTotal();
+                         updateCartCount();
+                           
+                        if ($(".cart-item").length === 0) {
+                            $(".cart-container").html(`
+                        <div class="cart-container" style="padding: 2rem; border-radius: 16px;">
+                        <h2 class="mb-4">
+                            <i class="fas fa-shopping-cart me-2" style="color: #7B61FF;"></i> Your Cart
+                        </h2>
+                          <div class="text-center p-5" style="background-color: #ffffff; border: 2px dashed #ddd; border-radius: 16px;">
+                        <i class="fas fa-shopping-cart fa-4x mb-3 text-muted"></i>
+                        <h4 class="text-muted mb-2">Oops! Your cart is empty.</h4>
+                        <p class="mb-4">Browse our products and add some items to your cart.</p>
+                        <a href="/Product" class="btn" style="background-color: #7B61FF; color: white; padding: 10px 24px; border-radius: 30px;">
+                            <i class="fas fa-arrow-left me-1"></i> Continue Shopping
+                        </a>
+                    </div>
+                            `);
+                        }
+
                         Swal.fire("Deleted!", "Your item has been deleted.", "success");
                     },
                     error: function () {

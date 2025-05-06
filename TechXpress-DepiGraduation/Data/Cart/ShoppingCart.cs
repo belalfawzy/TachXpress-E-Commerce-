@@ -30,7 +30,15 @@ namespace TechXpress_DepiGraduation.Data.Cart
         {
             return _context.ShoppingCartItems.Where(x => x.ShoppingCartId == ShoppingCartId).Select(x => x.Product.Price * x.Quantity).Sum();
 
+
         }
+        public int GetShoppingCartItemsCount()
+        {
+            return _context.ShoppingCartItems
+                .Where(x => x.ShoppingCartId == ShoppingCartId)
+                .Sum(x => x.Quantity);
+        }
+
 
         public async Task AddItemToCart(Product product)
         {

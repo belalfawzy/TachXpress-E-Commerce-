@@ -80,9 +80,8 @@ body {
     max-width: 900px;
     margin: auto;
     padding: 2.5rem;
-    background-color: #fdfdff;
     border-radius: 20px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.03);
+/*    box-shadow: 0 0 20px rgba(0,0,0,0.03);*/
 }
 
 .cart-item {

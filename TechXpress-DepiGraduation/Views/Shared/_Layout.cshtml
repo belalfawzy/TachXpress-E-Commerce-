@@ -36,6 +36,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ContactUs">Contact us</a>
                         </li>
                     </ul>
+
                     <form asp-action="Index" asp-controller="Product" method="get" class="d-flex align-items-center me-3" role="search">
                         <div class="input-group input-group-sm" style="max-width: 200px;">
                             <input name="SearchTerm" type="text"
@@ -73,5 +74,24 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        function updateCartCount() {
+            $.ajax({
+                url: '/Order/GetCartCount',
+                method: 'GET',
+                success: function (data) {
+                    $('#cart-count').text(data.count);
+                },
+                error: function () {
+                    console.error("Failed to fetch cart count.");
+                }
+            });
+        }
+        $(document).ready(function () {
+            updateCartCount();
+        });
+    </script>
+
 </body>
 </html>

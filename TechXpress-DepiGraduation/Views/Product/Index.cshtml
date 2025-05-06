@@ -266,9 +266,8 @@ ViewData["Title"] = "Products";
                     title: "Success!",
                     text: "Product added to cart.",
                     icon: "success"
-                }).then(() => {
-                    window.location.href = '/Order/Index'; // Redirect to specified URL
-                });
+                })
+                    updateCartCount();
             },
             error: function (xhr, status, error) {
                 Swal.fire({

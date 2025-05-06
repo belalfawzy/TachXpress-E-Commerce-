@@ -38,5 +38,27 @@ else
                 </form>
             </li>
         </ul>
+    @inject UserManager<AppUser> _userManager
+
+        @if (User.Identity.IsAuthenticated && !User.IsInRole("Admin"))
+        {
+            <li class="nav-item position-relative ms-3" style="list-style: none;">
+                <a class="nav-link d-flex align-items-center text-dark position-relative" href="/Order/Index" style="font-weight: 500;">
+                    <span class="position-relative">
+                        <i class="fas fa-shopping-cart fa-lg me-1"></i>
+                        <span id="cart-count"
+                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                              style="font-size: 0.6rem; padding: 4px 6px; transform: translate(-30%, -40%);">
+                            0
+                        </span>
+                    </span>
+                    <span>Cart</span>
+                </a>
+            </li>
+
+        }
+
+
+
     </div>
 }

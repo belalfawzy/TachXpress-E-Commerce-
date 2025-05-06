@@ -1,6 +1,8 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TechXpress_DepiGraduation.Data.Cart;
 using TechXpress_DepiGraduation.Data.Services;
 using TechXpress_DepiGraduation.Models;
@@ -12,6 +14,7 @@ namespace TechXpress_DepiGraduation.Controllers
         private readonly IProductService _productService;
         private readonly ShoppingCart _shoppingCart;
         private readonly IOrderService _orderService;
+        private readonly UserManager<AppUser> _userManager;
 
         public OrderController(IProductService productService, ShoppingCart shoppingCart,IOrderService orderService)
         {
@@ -36,7 +39,8 @@ namespace TechXpress_DepiGraduation.Controllers
                 await _shoppingCart.AddItemToCart(item);
             }
 
-            return RedirectToAction(nameof(Index));
+            //return RedirectToAction(nameof(Index));
+            return Ok();
         }
 
        
@@ -48,15 +52,27 @@ namespace TechXpress_DepiGraduation.Controllers
                 await _shoppingCart.RemoveItemFromCart(item);
             }
 
-            return RedirectToAction(nameof(Index));
+            //return RedirectToAction(nameof(Index));
+            return Ok();
         }
 
         public async Task<IActionResult> DeleteItemFromCart(int Id)
         {
             
             await _shoppingCart.DeleteItem(Id);
-            return RedirectToAction(nameof(Index));
+            //return RedirectToAction(nameof(Index));
+            return Ok();
         }
+
+        [HttpGet]
+        [HttpGet]
+        public IActionResult GetCartCount()
+        {
+            var count = _shoppingCart.GetShoppingCartItemsCount();
+            return Json(new { count = count });
+        }
+
+
 
         [HttpPost]
         [Authorize]

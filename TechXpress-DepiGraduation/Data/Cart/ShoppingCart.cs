@@ -98,6 +98,18 @@ namespace TechXpress_DepiGraduation.Data.Cart
             _context.ShoppingCartItems.RemoveRange(items);
             await _context.SaveChangesAsync();
         }
+        public int GetItemQuantity(int productId)
+        {
+            var item = _context.ShoppingCartItems.FirstOrDefault(x => x.Product.Id == productId);
+            return item?.Quantity ?? 0;
+        }
+
+        public Dictionary<int, int> GetCartQuantities()
+        {
+            return _context.ShoppingCartItems
+                .ToDictionary(x => x.Product.Id, x => x.Quantity);
+        }
+
 
     }
 }

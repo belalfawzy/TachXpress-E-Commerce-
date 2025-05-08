@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using TechXpress_DepiGraduation.Data.Cart;
 using TechXpress_DepiGraduation.Data.Services;
 using TechXpress_DepiGraduation.Data.StaticMembers;
 using TechXpress_DepiGraduation.Models;
@@ -13,13 +15,12 @@ public class ProductController: Controller
 {
     private readonly IProductService productService;
     private readonly ICategoryService _categoryService;
-
-    public ProductController(IProductService _productService,ICategoryService ser)
+    private readonly ShoppingCart _shoppingCart;
+    public ProductController(IProductService _productService,ICategoryService ser,ShoppingCart shoppingCart)
     {
         productService = _productService;
         _categoryService = ser;
-
-
+        _shoppingCart = shoppingCart;
     }
     
     public async Task<IActionResult> Index(string searchQuery)
@@ -30,6 +31,9 @@ public class ProductController: Controller
             searchQuery = searchQuery.ToLower();
             products = products.Where(p => p.Name.ToLower().Contains(searchQuery)||p.Description.ToLower().Contains(searchQuery)).ToList() ;
         }
+        var cartItems = _shoppingCart.GetShoppingCartItems();
+        var quantities = cartItems.ToDictionary(i => i.Product.Id, i => i.Quantity);
+        ViewBag.CartQuantities = quantities;
         return View(products);
     }
 
@@ -51,7 +55,6 @@ public class ProductController: Controller
             await productService.CreateAsync(p);
             return RedirectToAction(nameof(Index));
         }
-
         return View(p);
     }
     [Authorize(Roles = UserRoles.Admin)]
@@ -61,7 +64,6 @@ public class ProductController: Controller
         if (p == null) return View("Item already not found");
         await productService.DeleteAsync(id);
         return RedirectToAction(nameof(Index));
-
     }
 
     public async Task<IActionResult> Details(int id)
@@ -69,7 +71,6 @@ public class ProductController: Controller
         var p = await productService.GetItemByIdAsync(id);
         if (p == null) return NotFound();
         return View(p);
-
     }
     [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> Edit(int id)
@@ -95,10 +96,4 @@ public class ProductController: Controller
         }
 
     }
-
-
-    
-
-
-
 }

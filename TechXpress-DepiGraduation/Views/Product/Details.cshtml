@@ -2,6 +2,7 @@
 @{
 Layout = "_Layout";
 ViewData["Title"] = "Product Details";
+var similarProducts = ViewBag.SimilarProducts as List<TechXpress_DepiGraduation.Models.Product> ?? new List<TechXpress_DepiGraduation.Models.Product>();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -15,7 +16,7 @@ ViewData["Title"] = "Product Details";
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .hero {
-            background: #7B61FF; /* Updated to match second page */
+            background: #7B61FF;
             color: white;
             padding: 2rem 1rem;
             border-radius: 12px;
@@ -67,20 +68,20 @@ ViewData["Title"] = "Product Details";
         }
         .thumbnail.active, .thumbnail:hover {
             opacity: 1;
-            border: 2px solid #7B61FF; /* Updated to match second page */
+            border: 2px solid #7B61FF;
         }
         .btn-custom {
             padding: 0.75rem 1.75rem;
             font-size: 1rem;
             font-weight: bold;
-            background: #7B61FF; /* Updated to match second page */
+            background: #7B61FF;
             color: white;
             border: none;
             border-radius: 50px;
             transition: background 0.3s ease, transform 0.3s ease;
         }
         .btn-custom:hover {
-            background: #6A52D9; /* Darker shade for hover */
+            background: #6A52D9;
             transform: translateY(-2px);
         }
         .btn-outline-custom {
@@ -88,13 +89,13 @@ ViewData["Title"] = "Product Details";
             font-size: 1rem;
             font-weight: bold;
             background: transparent;
-            color: #7B61FF; /* Updated to match second page */
+            color: #7B61FF;
             border: 2px solid #7B61FF;
             border-radius: 50px;
             transition: background 0.3s ease, color 0.3s ease;
         }
         .btn-outline-custom:hover {
-            background: #E8E4FF; /* Light purple for hover */
+            background: #E8E4FF;
             color: #6A52D9;
         }
         .color-badge {
@@ -108,13 +109,21 @@ ViewData["Title"] = "Product Details";
         .fade-in {
             animation: fadeIn 0.5s ease-in;
         }
-       
-       
-        .carousel-item img {
-            height: 300px;
+        
+        .similar-product-img {
+            height: 200px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 10px 10px 0 0;
         }
-        .product-card {
-            margin: 10px;
+        
+        .product-details {
+                                      text-align: center;
+                                  }
+        .btn-group {
+            flex-direction: column;
+            gap: 10px;
         }
         
     </style>
@@ -219,6 +228,33 @@ ViewData["Title"] = "Product Details";
         </div>
     </div>
     }
+
+    <!-- Similar Products Section -->
+    @if (similarProducts.Any())
+    {
+    <div class="mt-5">
+        <h2 class="text-center mb-4">Similar Products</h2>
+        <div class="row g-4">
+            @foreach (var product in similarProducts.Take(4)) 
+            {
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center">
+            <a asp-action="Details" asp-route-id="@product.Id" class="text-decoration-none text-dark">
+            <div class="product-card h-100 d-flex flex-column">
+            <div class="similar-product-img" style="background-image: url('@(product.Image?.Any() == true ? product.Image[0] : "https://via.placeholder.com/400")');"></div>
+            <div class="p-3 flex-grow-1">
+            <h5 class="text-center fw-bold">@product.Name</h5>
+            <p class="text-muted text-center" style="font-size: 0.9rem;">
+            @(product.Description?.Length > 50 ? product.Description.Substring(0, 50) + "..." : product.Description)
+            </p>
+            <p class="text-center fw-bold text-success">$@($"{product.Price:0.00}")</p>
+            </div>
+            </div>
+            </a>
+            </div>
+            }
+        </div>
+    </div>
+    }
 </div>
 
 @section Scripts {
@@ -275,7 +311,7 @@ ViewData["Title"] = "Product Details";
             text: 'Do you want to delete this product? This action cannot be undone.',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#7B61FF', /* Updated to match second page */
+            confirmButtonColor: '#7B61FF',
             cancelButtonColor: '#6c757d',
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'Cancel'
@@ -287,3 +323,4 @@ ViewData["Title"] = "Product Details";
     }
 </script>
 }
+</body>

@@ -70,5 +70,11 @@ namespace TechXpress_DepiGraduation.Data.Services
             }
         }
 
+        public List<Product> getSimilar(int count, int categoryID)
+        {
+            var products = _context.Products.Where(p => p.CategoryId == categoryID).Take(count).ToList();
+            return products;
+        }
+
     }
 }

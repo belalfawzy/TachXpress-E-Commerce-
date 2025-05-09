@@ -127,6 +127,8 @@ namespace TechXpress_DepiGraduation.Controllers
                 return NotFound();
             }
 
+            ViewBag.SimilarProducts = _productService.getSimilar(4, product.CategoryId);
+
             product.color = product.color[0].Split(',').ToList();
 
             product.Category = await _categoryService.GetItemByIdAsync(product.CategoryId);
@@ -163,7 +165,6 @@ namespace TechXpress_DepiGraduation.Controllers
             {
                 try
                 {
-                    // Validate colors
                     var colors = product.color[0].Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
                     if (!colors.All(IsValidColor))
                     {
@@ -172,7 +173,6 @@ namespace TechXpress_DepiGraduation.Controllers
                         return View(product);
                     }
 
-                    // Fetch existing product
                     var existingProduct = await _productService.GetItemByIdAsync(id);
                     if (existingProduct == null)
                     {
@@ -180,20 +180,17 @@ namespace TechXpress_DepiGraduation.Controllers
                         return NotFound();
                     }
 
-                    // Update scalar properties
                     existingProduct.Name = product.Name;
                     existingProduct.Description = product.Description;
                     existingProduct.Price = product.Price;
                     existingProduct.CategoryId = product.CategoryId;
                     existingProduct.color = product.color;
 
-                    // Handle images
                     var updatedImages = product.Image?.Where(img => !string.IsNullOrWhiteSpace(img) && !ImagesToDelete.Contains(ExtractPublicIdFromUrl(img))).ToList() ?? new List<string>();
-                    var newPublicIds = new List<string>(); // Track new public IDs for rollback
+                    var newPublicIds = new List<string>(); 
 
                     try
                     {
-                        // Delete removed images from Cloudinary
                         foreach (var publicId in ImagesToDelete.Where(id => !string.IsNullOrWhiteSpace(id)))
                         {
                             var deletionParams = new DeletionParams(publicId);

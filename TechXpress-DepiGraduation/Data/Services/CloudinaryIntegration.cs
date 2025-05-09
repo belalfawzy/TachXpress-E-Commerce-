@@ -93,5 +93,9 @@ namespace TechXpress_DepiGraduation.Data.Services
 
             return _cloudinary.Api.UrlImgUp.Transform(transformation).BuildUrl(publicId);
         }
+        public async Task<DeletionResult> DestroyAsync(DeletionParams deletionParams)
+        {
+            return await _cloudinary.DestroyAsync(deletionParams);
+        }
     }
 }

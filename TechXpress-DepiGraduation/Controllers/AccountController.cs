@@ -55,8 +55,16 @@ namespace TechXpress_DepiGraduation.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(registerViewModel);
+                return View(registerViewModel); 
             }
+
+            var existingUser = await _userManager.FindByEmailAsync(registerViewModel.Email);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("Email", "This email is already Exits.");
+                return View(registerViewModel); 
+            }
+
             var user = new AppUser()
             {
                 Email = registerViewModel.Email,
@@ -64,17 +72,20 @@ namespace TechXpress_DepiGraduation.Controllers
                 UserName = registerViewModel.Email.Split('@')[0],
                 PhoneNumber = registerViewModel.PhoneNumber,
             };
+
             var result = await _userManager.CreateAsync(user, registerViewModel.Password);
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, UserRoles.User);
-                return View("RegisterationComplete");
+                return View("RegisterationComplete"); 
             }
+
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError("", error.Description);
             }
-            return View("registerViewModel");
+
+            return View(registerViewModel); // Return the same view with errors
         }
         public async Task<IActionResult> Logout()
         {

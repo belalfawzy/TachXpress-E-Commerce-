@@ -1,7 +1,6 @@
-@model TechXpress_DepiGraduation.Models.Product
+@model Product
 @{
-Layout = "_Layout";
-ViewData["Title"] = "Add new Product";
+    ViewData["Title"] = "Create";
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -67,49 +66,145 @@ ViewData["Title"] = "Add new Product";
                     <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-semibold"></label>
+                            <input asp-for="Name" class="form-control" autocomplete="off" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-semibold"></label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Price" class="form-label fw-semibold"></label>
+                            <input asp-for="Price" class="form-control" autocomplete="off" />
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Image" class="form-label fw-semibold"></label>
+                            <input asp-for="Image" class="form-control" id="Image" autocomplete="off" placeholder="https://example.com/image.jpg" />
+                            <span asp-validation-for="Image" class="text-danger small"></span>
+
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Colors</label>
+                            <div id="color-container">
+                                <div class="input-group mb-2 color-input-group">
+                                    <input type="color" class="form-control color-input" value="#000000" />
+                                    <button type="button" class="btn btn-outline-danger remove-color">×</button>
+                                </div>
+                            </div>
+                            <button type="button" id="add-color" class="btn btn-sm btn-outline-secondary mt-2">Add Another Color</button>
+                            <input type="hidden" asp-for="color" id="color-values" />
+                            <span asp-validation-for="color" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="CategoryId" class="form-label">Category</label>
+                            <select asp-for="CategoryId" class="form-control" asp-items="@(new SelectList(ViewBag.Categories ?? new List<Category>(), nameof(Category.Id), nameof(Category.Name)))">
+                                <option value="">Select a category</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <a asp-action="Index" class="btn btn-secondary me-2" style="background-color: #EDEDED; color: #2D2D2D;">
+                                <i class="fas fa-arrow-left me-1"></i> Back to List </a>
+                            <button type="submit" class="btn btn-success" style="background-color: #7B61FF;">
+                                <i class="fas fa-plus me-1"></i> Create
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 @section Scripts {
-<partial name="_ValidationScriptsPartial" />
-<script>
-    $(document).ready(function() {
-        // Add new color input when button is clicked
-        $('#add-color').click(function() {
-            const container = $('#color-container');
-            const newColorGroup = `
-                    <div class="input-group mb-2 color-input-group">
-                        <input type="color" class="form-control color-input" value="#000000"/>
-                        <button type="button" class="btn btn-outline-danger remove-color">×</button>
-                    </div>`;
-            container.append(newColorGroup);
+    <partial name="_ValidationScriptsPartial" />
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+         $(document).ready(function() {
+            $('#add-color').click(function() {
+                const container = $('#color-container');
+                const newColorGroup = `
+                        <div class="input-group mb-2 color-input-group">
+                            <input type="color" class="form-control color-input" value="#000000"/>
+                            <button type="button" class="btn btn-outline-danger remove-color">×</button>
+                        </div>`;
+                container.append(newColorGroup);
+                updateColorValues();
+            });
+
+            // Handle remove button clicks
+            $(document).on('click', '.remove-color', function() {
+                const group = $(this).closest('.color-input-group');
+                group.remove();
+                updateColorValues();
+            });
+
+            // Update hidden input whenever color inputs change
+            $(document).on('input', '.color-input', updateColorValues);
+
+            function updateColorValues() {
+                const colors = [];
+                $('.color-input').each(function() {
+                    const color = $(this).val().trim();
+                    if (color) {
+                        colors.push(color);
+                    }
+                });
+                $('#color-values').val(colors.join(','));
+            }
+
+            // Initialize color values on page load
             updateColorValues();
         });
+        $(document).ready(function () {
+            const $imageInput = $('#Image');
+            const $preview = $('<div class="mt-3"><img id="image-preview" class="img-thumbnail" style="max-height: 200px;" /></div>');
+            $imageInput.after($preview);
 
-        // Handle remove button clicks
-        $(document).on('click', '.remove-color', function() {
-            const group = $(this).closest('.color-input-group');
-            group.remove();
-            updateColorValues();
-        });
 
-        // Update hidden input whenever color inputs change
-        $(document).on('input', '.color-input', updateColorValues);
+            $imageInput.on('input', function () {
+                const url = $(this).val();
+                const $img = $('#image-preview');
 
-        function updateColorValues() {
-            const colors = [];
-            $('.color-input').each(function() {
-                const color = $(this).val().trim();
-                if (color) {
-                    colors.push(color);
+                if (url && isValidUrl(url)) {
+                    $img.attr('src', url).show();
+                } else {
+                    $img.hide();
                 }
             });
-            $('#color-values').val(colors.join(','));
-        }
 
-        updateColorValues();
-    });
-</script>
+
+            function isValidUrl(url) {
+                return /\.(jpeg|jpg|gif|png|webp|svg)$/.test(url.toLowerCase());
+            }
+
+            $('form').on('submit', function (e) {
+                const url = $imageInput.val();
+                if (url && !isValidUrl(url)) {
+                    e.preventDefault();
+                    alert('Please enter a valid image URL (jpg, png, gif, etc.)');
+                }
+            });
+        });
+
+    </script>
 }
 </body>
 </html>

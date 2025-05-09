@@ -31,37 +31,68 @@ namespace TechXpress_DepiGraduation.Controllers
             ViewBag.Total = _shoppingCart.GetTotal();
             return View(items);
         }
-        public async Task<IActionResult> AddToCart( int Id)
+        public async Task<IActionResult> AddToCart(int Id)
         {
             var item = await _productService.GetItemByIdAsync(Id);
             if (item != null)
             {
                 await _shoppingCart.AddItemToCart(item);
-            }
 
-            //return RedirectToAction(nameof(Index));
-            return Ok();
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    var count = _shoppingCart.GetShoppingCartItemsCount();
+                    var itemQuantity = _shoppingCart.GetItemQuantity(item.Id);
+                    return Json(new
+                    {
+                        success = true,
+                        count = count,
+                        productId = item.Id,
+                        quantity = itemQuantity
+                    });
+                }
+            }
+            return RedirectToAction(nameof(Index));
         }
 
-       
         public async Task<IActionResult> DecreaseFromCart(int Id)
         {
             var item = await _productService.GetItemByIdAsync(Id);
             if (item != null)
             {
                 await _shoppingCart.RemoveItemFromCart(item);
-            }
 
-            //return RedirectToAction(nameof(Index));
-            return Ok();
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    var count = _shoppingCart.GetShoppingCartItemsCount();
+                    var itemQuantity = _shoppingCart.GetItemQuantity(item.Id);
+                    return Json(new
+                    {
+                        success = true,
+                        count = count,
+                        productId = item.Id,
+                        quantity = itemQuantity
+                    });
+                }
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> DeleteItemFromCart(int Id)
         {
-            
             await _shoppingCart.DeleteItem(Id);
-            //return RedirectToAction(nameof(Index));
-            return Ok();
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                var count = _shoppingCart.GetShoppingCartItemsCount();
+                return Json(new
+                {
+                    success = true,
+                    count = count,
+                    productId = Id,
+                    quantity = 0
+                });
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]

@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TechXpress_DepiGraduation.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 </head>
 <body>
@@ -37,24 +38,36 @@
                         </li>
                     </ul>
 
-                    <form asp-action="Index" asp-controller="Product" method="get" class="d-flex align-items-center me-3" role="search">
-                        <div class="input-group input-group-sm" style="max-width: 200px;">
-                            <input name="SearchTerm" type="text"
+                    <form asp-action="Index" asp-controller="Product" class="d-flex align-items-center me-3" role="search">
+                        <div class="input-group" style="max-width: 250px;">
+                            <input name="searchQuery" type="text"
+                                   value="@Context.Request.Query["searchQuery"]"
                                    class="form-control border-0"
                                    placeholder="Search..."
                                    style="background-color: #f2f2f2; border-radius: 20px 0 0 20px; font-size: 0.9rem; height: 36px;" />
-
                             <button type="submit"
                                     class="btn"
-                                    style="background-color: #a277a6; color: white; border-radius: 0 20px 20px 0; height: 36px;">
+                                    style="background-color: #7B61FF; color: white; border-radius: 0 20px 20px 0; height: 36px;">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
                     </form>
-                    
+
+                    <li class="nav-item position-relative ms-3" style="list-style: none;">
+                        <a class="nav-link d-flex align-items-center text-dark position-relative" href="/Order/Index" style="font-weight: 500;">
+                            <span class="position-relative">
+                                <i class="fas fa-shopping-cart fa-lg me-1"></i>
+                                <span id="cart-count"
+                                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                      style="font-size: 0.6rem; padding: 4px 6px; transform: translate(-30%, -40%);">
+                                    0
+                                </span>
+                            </span>
+                            <span>Cart</span>
+                        </a>
+                    </li>
 
                     <partial name="_identity" />
-
                 </div>
             </div>
         </nav>

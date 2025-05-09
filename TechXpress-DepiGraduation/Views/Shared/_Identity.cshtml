@@ -2,18 +2,18 @@
 @inject UserManager<AppUser> _user;
 @if (!User.Identity.IsAuthenticated)
 {
-    <a class="btn btn-ouline-success mr-2" asp-action="Login" asp-controller="Account">
+    <a class="btn btn-outline-secondary" asp-action="Login" asp-controller="Account">
         <i class="fas fa-regular fa-arrow-right-to-bracket"></i> Login
     </a>
-    <a class="btn btn-ouline-Secondary mr-2" asp-action="Register" asp-controller="Account">
+    <a class="btn btn-outline-secondary" asp-action="Register" asp-controller="Account">
         <i class="fas fa-regular fa-arrow-right-to-bracket"></i> Register
     </a>
 }
 else
 {
     <div class="dropdown">
-        <button class="btn btn-ouline-success dropdown-toggle" id="profile-btn" data-bs-toggle="dropdown" aria-labelledby="profile-btn">
-            <i class="fas fa-person"></i> Hello, @_user.GetUserName(User)
+        <button class="btn btn-ouline-success dropdown-toggle" id="profile-btn" data-bs-toggle="dropdown" aria-labelledby="profile-btn" style="color: black">
+            <i class="fas fa-person text-dark"></i> Hello, @_user.GetUserName(User)
         </button>
         <ul class="dropdown-menu" aria-labledby="profile-btn">
             <li>
@@ -25,7 +25,6 @@ else
                     <a class=dropdown-item asp-action="Users" asp-controller="Account">
                         <i class="fas fa-regular fa-users"></i> Users
                     </a>
-
                     <a class=dropdown-item asp-action="CreateAdmin" asp-controller="Account">
                         <i class="fas fa-user-shield"></i> Add Admin
                     </a>
@@ -38,27 +37,5 @@ else
                 </form>
             </li>
         </ul>
-    @inject UserManager<AppUser> _userManager
-
-        @if (User.Identity.IsAuthenticated && !User.IsInRole("Admin"))
-        {
-            <li class="nav-item position-relative ms-3" style="list-style: none;">
-                <a class="nav-link d-flex align-items-center text-dark position-relative" href="/Order/Index" style="font-weight: 500;">
-                    <span class="position-relative">
-                        <i class="fas fa-shopping-cart fa-lg me-1"></i>
-                        <span id="cart-count"
-                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                              style="font-size: 0.6rem; padding: 4px 6px; transform: translate(-30%, -40%);">
-                            0
-                        </span>
-                    </span>
-                    <span>Cart</span>
-                </a>
-            </li>
-
-        }
-
-
-
     </div>
 }

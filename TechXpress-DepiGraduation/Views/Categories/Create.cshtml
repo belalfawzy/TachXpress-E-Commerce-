@@ -11,6 +11,7 @@
     <h2 class=" text-center" style="color: #2D2D2D;">Add New Category</h2>
         <div class=" col-md-6 offset-3">
             <form asp-action="Create">
+            @Html.AntiForgeryToken()
                 <div class="form-group">
                     <label asp-for="Name"></label>
                     <input asp-for="Name" class="form-control" />
@@ -31,5 +32,10 @@
             </form>
         </div>
 </div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
 
 

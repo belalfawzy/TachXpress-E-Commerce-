@@ -5,7 +5,7 @@ namespace TechXpress_DepiGraduation.Data.Base
 {
     public class BaseRepositoryEntity<T> : IBaseRepositoryEntity<T> where T : class, IBaseEntity
     {
-        private readonly AppDbContext _context;
+        protected readonly AppDbContext _context;
         public BaseRepositoryEntity(AppDbContext context)
         {
             _context = context;

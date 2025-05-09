@@ -32,7 +32,7 @@ namespace TechXpress_DepiGraduation
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddMemoryCache();
             builder.Services.AddAuthorization();
-
+            builder.Services.AddSingleton<CloudinaryIntegration>();
             var app = builder.Build();
             app.UseSession();
             // Configure the HTTP request pipeline.

@@ -127,6 +127,8 @@ namespace TechXpress_DepiGraduation.Controllers
                 return NotFound();
             }
 
+            product.color = product.color[0].Split(',').ToList();
+
             product.Category = await _categoryService.GetItemByIdAsync(product.CategoryId);
             return View(product);
         }

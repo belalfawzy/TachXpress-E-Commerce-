@@ -147,6 +147,7 @@ var quantities = ViewBag.CartQuantities as Dictionary<int, int> ?? new Dictionar
                     qtyControls.classList.remove('d-none');
                     qtySpan.textContent = parseInt(qtySpan.textContent || 0) + 1;
                 }
+                
             },
             error: function (xhr, status, error) {
                 Swal.fire({

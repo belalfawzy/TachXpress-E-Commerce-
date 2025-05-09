@@ -15,7 +15,7 @@ ViewData["Title"] = "Product Details";
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .hero {
-            background: linear-gradient(135deg, #a277a6, #cba6f7);
+            background: #7B61FF; /* Updated to match second page */
             color: white;
             padding: 2rem 1rem;
             border-radius: 12px;
@@ -41,7 +41,7 @@ ViewData["Title"] = "Product Details";
         }
         .carousel-item img {
             width: 100%;
-            height: 450px; /* Increased height for better visual balance */
+            height: 450px;
             object-fit: cover;
             border-radius: 10px;
             transition: transform 0.3s ease;
@@ -59,7 +59,7 @@ ViewData["Title"] = "Product Details";
             cursor: pointer;
             opacity: 0.7;
             transition: opacity 0.3s ease;
-            width: 80px; /* Increased thumbnail size */
+            width: 80px;
             height: 80px;
             object-fit: cover;
             border-radius: 5px;
@@ -67,20 +67,20 @@ ViewData["Title"] = "Product Details";
         }
         .thumbnail.active, .thumbnail:hover {
             opacity: 1;
-            border: 2px solid #a277a6;
+            border: 2px solid #7B61FF; /* Updated to match second page */
         }
         .btn-custom {
             padding: 0.75rem 1.75rem;
             font-size: 1rem;
             font-weight: bold;
-            background: linear-gradient(135deg, #a277a6, #cba6f7);
+            background: #7B61FF; /* Updated to match second page */
             color: white;
             border: none;
             border-radius: 50px;
             transition: background 0.3s ease, transform 0.3s ease;
         }
         .btn-custom:hover {
-            background: linear-gradient(135deg, #7a428f, #b68adf);
+            background: #6A52D9; /* Darker shade for hover */
             transform: translateY(-2px);
         }
         .btn-outline-custom {
@@ -88,14 +88,14 @@ ViewData["Title"] = "Product Details";
             font-size: 1rem;
             font-weight: bold;
             background: transparent;
-            color: #a277a6;
-            border: 2px solid #a277a6;
+            color: #7B61FF; /* Updated to match second page */
+            border: 2px solid #7B61FF;
             border-radius: 50px;
             transition: background 0.3s ease, color 0.3s ease;
         }
         .btn-outline-custom:hover {
-            background: #f1e9f7;
-            color: #7a428f;
+            background: #E8E4FF; /* Light purple for hover */
+            color: #6A52D9;
         }
         .color-badge {
             width: 30px;
@@ -109,27 +109,18 @@ ViewData["Title"] = "Product Details";
             animation: fadeIn 0.5s ease-in;
         }
        
+       
         .carousel-item img {
-            height: 300px; /* Adjusted for smaller screens */
+            height: 300px;
         }
         .product-card {
             margin: 10px;
         }
-        .btn-custom, .btn-outline-custom {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-        
-      
-        .btn-group {
-            flex-direction: column;
-            gap: 10px;
-        }
         
     </style>
 </head>
-<body> 
-<div class="container-fluid py-5"> <!-- Changed to container-fluid for full width -->
+<body>
+<div class="container-fluid py-5">
     <!-- Hero Section -->
     <div class="hero fade-in">
         <h1><i class="fas fa-box-open me-2"></i>@(Model?.Name ?? "Product Details")</h1>
@@ -148,8 +139,8 @@ ViewData["Title"] = "Product Details";
     {
     <!-- Product Card -->
     <div class="row justify-content-center">
-        <div class="col-lg-12"> <!-- Changed to col-lg-12 for wider card -->
-            <div class="product-card fade-in p-4">
+        <div class="col-12">
+            <div class=" p-4">
                 <div class="row g-0">
                     <!-- Image Carousel -->
                     <div class="col-md-6">
@@ -229,7 +220,7 @@ ViewData["Title"] = "Product Details";
     </div>
     }
 </div>
-</body>
+
 @section Scripts {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
@@ -252,14 +243,28 @@ ViewData["Title"] = "Product Details";
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Product added to cart!');
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Product added to cart!',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 } else {
-                    alert('Failed to add product to cart: ' + (data.message || 'Unknown error'));
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to add product to cart: ' + (data.message || 'Unknown error'),
+                        icon: 'error'
+                    });
                 }
             })
             .catch(error => {
                 console.error('Error adding to cart:', error);
-                alert('An error occurred while adding to cart.');
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred while adding to cart.',
+                    icon: 'error'
+                });
             });
     }
 
@@ -270,7 +275,7 @@ ViewData["Title"] = "Product Details";
             text: 'Do you want to delete this product? This action cannot be undone.',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#a277a6',
+            confirmButtonColor: '#7B61FF', /* Updated to match second page */
             cancelButtonColor: '#6c757d',
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'Cancel'

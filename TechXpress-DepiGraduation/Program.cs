@@ -32,6 +32,7 @@ namespace TechXpress_DepiGraduation
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddMemoryCache();
             builder.Services.AddAuthorization();
+            builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
             app.UseSession();

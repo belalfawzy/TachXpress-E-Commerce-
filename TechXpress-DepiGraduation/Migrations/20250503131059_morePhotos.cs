@@ -22,7 +22,7 @@ namespace TechXpress_DepiGraduation.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
                 table: "Products",
-                type: "nvarchar(15)",
+                type: "nvarchar(50)",
                 maxLength: 15,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -40,7 +40,7 @@ namespace TechXpress_DepiGraduation.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
                 table: "Categories",
-                type: "nvarchar(15)",
+                type: "nvarchar(50)",
                 maxLength: 15,
                 nullable: false,
                 oldClrType: typeof(string),

@@ -97,5 +97,6 @@ namespace TechXpress_DepiGraduation.Data.Services
         {
             return await _cloudinary.DestroyAsync(deletionParams);
         }
+
     }
 }

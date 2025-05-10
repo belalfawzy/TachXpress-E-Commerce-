@@ -1,117 +1,88 @@
-@model List<TechXpress_DepiGraduation.Models.Product>
+@model List<Product>
 @{
-    Layout = "_Layout";
-    ViewData["Title"] = "Products";
-var quantities = ViewBag.CartQuantities as Dictionary<int, int> ?? new Dictionary<int, int>();
+    var quantities = ViewBag.CartQuantities as Dictionary<int, int> ?? new Dictionary<int, int>();
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.min.css" rel="stylesheet" />
-    <style>
-        .product-card {
-            transition: transform 0.2s;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
-        .card-img .img {
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            height: 200px;
-        }
-        .card-footer {
-            background: none;
-            border-top: none;
-        }
-    </style>
-</head>
-<body>
-<div class="container mt-4">
-    @if (Context.User.Identity.IsAuthenticated && User.IsInRole("Admin"))
-    {
+@if (Context.User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+{
     <div class="mb-4 text-end">
         <a asp-action="Create" class="btn" style="background-color: #7B61FF; color: white;">
             <i class="fas fa-plus-circle me-2"></i> Add New Product
         </a>
     </div>
-    }
+}
+<div class="container mt-4">
 
     <div class="row g-4">
         @foreach (var v in Model)
         {
-        var productId = v.Id;
-        var hasInCart = quantities.ContainsKey(productId);
-        var qty = hasInCart ? quantities[productId] : 0;
+            var productId = v.Id;
+            var hasInCart = quantities.ContainsKey(productId);
+            var qty = hasInCart ? quantities[productId] : 0;
 
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center">
-            <div class="position-relative" style="width: 100%; max-width: 250px;">
-                @if (Context.User.Identity.IsAuthenticated && User.IsInRole("Admin"))
-                {
-                <a asp-action="Edit" asp-route-id="@v.Id"
-                   class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 shadow-sm"
-                   title="Edit" style="z-index: 10;">
-                    <i class="bi bi-pencil-fill text-dark"></i>
-                </a>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center">
+                <div class="position-relative" style="width: 100%; max-width: 250px;">
 
-                <button onclick="confirmDelete(@v.Id)"
-                        class="btn btn-sm btn-danger position-absolute top-0 start-0 m-2 shadow-sm"
-                        title="Delete" style="z-index: 10;">
-                    <i class="bi bi-trash"></i>
-                </button>
-                }
+                    @if (Context.User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@v.Id"
+                           class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 shadow-sm"
+                           title="Edit" style="z-index: 10;">
+                            <i class="bi bi-pencil-fill text-dark"></i>
+                        </a>
 
-                <div class="card product-card h-100 d-flex flex-column">
-                    <a asp-action="Details" asp-route-id="@v.Id" class="text-decoration-none text-dark flex-grow-1">
-                        <div class="card-img">
-                            <div class="img"
-                                 style="background-image: url('@(v.Image?.Any() == true ? v.Image[0] : "/images/placeholder.jpg")');">
+                        <a asp-action="Delete" asp-route-id="@v.Id"
+                           class="btn btn-sm btn-danger position-absolute top-0 start-0 m-2 shadow-sm"
+                           title="Delete"
+                           onclick="return confirm('Are you sure you want to delete this item?');"
+                           style="z-index: 10;">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    }
+
+                    <div class="card product-card h-100 d-flex flex-column">
+                        <a asp-action="Details" asp-route-id="@v.Id" class="text-decoration-none text-dark flex-grow-1">
+                            <div class="card-img">
+                                <div class="img"
+                                     style="background-image: url('@(v.Image?.Any() == true ? (v.Image[0].StartsWith("http") ? v.Image[0] : "/images/" + v.Image[0]): "/images/placeholder.jpg")');
+                                     height: 200px; background-size: contain; background-repeat: no-repeat; background-position: center;">
+                                </div>
+                            </div>
+
+                            <div class="card-title text-center fw-bold">@v.Name</div>
+                            <div class="card-subtitle text-muted text-center px-2" style="font-size: 0.9rem;">@v.Description</div>
+                            <hr class="card-divider mx-3 my-2" />
+                        </a>
+
+                        <div class="card-footer d-flex justify-content-between align-items-center px-3 pb-3">
+                            <div class="card-price fw-bold">$@($"{v.Price:0.00}")</div>
+
+                            <div class="d-flex flex-column align-items-center">
+                                <div id="cart-controls-@productId" class="@(qty > 0 ? "d-none" : "")">
+                                    <button onclick="addToCart(@productId, event); event.stopPropagation();"
+                                            class="btn btn-sm btn-primary"
+                                            style="background-color:#7B61FF; border-color:#7B61FF;">
+                                        <i class="bi bi-cart text-white"></i>
+                                    </button>
+                                </div>
+
+                                <div id="quantity-controls-@productId"
+                                     class="d-flex flex-row align-items-center justify-content-center gap-2 mt-1 @(qty > 0 ? "" : "d-none")">
+                                    <button class="btn btn-outline-secondary btn-sm" style="padding:0"
+                                            onclick="updateCart(@productId, -1); event.stopPropagation();">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <span id="qty-@productId" class="fw-bold px-2">@qty</span>
+                                    <button class="btn btn-outline-secondary btn-sm" style="padding:0"
+                                            onclick="updateCart(@productId, 1); event.stopPropagation();">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="card-title text-center fw-bold">@v.Name</div>
-                        <div class="card-subtitle text-muted text-center px-2" style="font-size: 0.9rem;">
-                            @(v.Description?.Length > 50 ? v.Description.Substring(0, 50) + "..." : v.Description)
-                        </div>
-                        <hr class="card-divider mx-3 my-2" />
-                    </a>
-
-                    <div class="card-footer d-flex justify-content-between align-items-center px-3 pb-3">
-                        <div class="card-price fw-bold">$@($"{v.Price:0.00}")</div>
-
-                        <div class="d-flex flex-column align-items-center">
-                            <div id="cart-controls-@productId" class="@(qty > 0 ? "d-none" : "")">
-                                <button onclick="addToCart(@productId); event.stopPropagation();"
-                                        class="btn btn-sm btn-primary"
-                                        style="background-color:#7B61FF; border-color:#7B61FF;">
-                                    <i class="bi bi-cart text-white"></i>
-                                </button>
-                            </div>
-
-                            <div id="quantity-controls-@productId"
-                                 class="d-flex flex-row align-items-center justify-content-center gap-2 mt-1 @(qty > 0 ? "" : "d-none")">
-                                <button class="btn btn-outline-secondary btn-sm" style="padding:0"
-                                        onclick="updateCart(@productId, -1); event.stopPropagation();">
-                                    <i class="bi bi-dash"></i>
-                                </button>
-                                <span id="qty-@productId" class="fw-bold px-2">@qty</span>
-                                <button class="btn btn-outline-secondary btn-sm" style="padding:0"
-                                        onclick="updateCart(@productId, 1); event.stopPropagation();">
-                                    <i class="bi bi-plus"></i>
-                                </button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         }
     </div>
 </div>
@@ -121,152 +92,70 @@ var quantities = ViewBag.CartQuantities as Dictionary<int, int> ?? new Dictionar
     Product added to cart!
 </div>
 
-@section Scripts {
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
 <script>
-    $(document).ready(function () {
-        // Auto-dismiss alerts
-        setTimeout(function () {
-            $('.alert').alert('close');
-        }, 5000);
-    });
+    function addToCart(productId, event) {
+        event.preventDefault();
 
-    function addToCart(id) {
-        $.ajax({
-            url: '/Order/AddToCart/' + id,
-            type: 'POST',
-            data: { productId: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
-            success: function () {
-                showCartMessage();
-                const cartBtn = document.getElementById(`cart-controls-${id}`);
-                const qtyControls = document.getElementById(`quantity-controls-${id}`);
-                const qtySpan = document.getElementById(`qty-${id}`);
-                if (cartBtn && qtyControls && qtySpan) {
-                    cartBtn.classList.add('d-none');
-                    qtyControls.classList.remove('d-none');
-                    qtySpan.textContent = parseInt(qtySpan.textContent || 0) + 1;
+        fetch(`/Order/AddToCart/${productId}`)
+            .then(response => {
+                if (response.ok) {
+                    showCartMessage();
+
+                    const cartBtn = document.getElementById(`cart-controls-${productId}`);
+                    const qtyControls = document.getElementById(`quantity-controls-${productId}`);
+                    const qtySpan = document.getElementById(`qty-${productId}`);
+
+                    if (cartBtn && qtyControls && qtySpan) {
+                        cartBtn.classList.add('d-none');
+                        qtyControls.classList.remove('d-none');
+                        qtySpan.textContent = 1;
+                    }
+                } else {
+                    alert("Something went wrong!");
                 }
-                
-            },
-            error: function (xhr, status, error) {
-                Swal.fire({
-                    title: "Error!",
-                    text: "An error occurred while adding to cart.",
-                    icon: "error"
-                });
-            }
-        });
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
     }
 
     function updateCart(productId, change) {
         const qtySpan = document.getElementById(`qty-${productId}`);
         const cartBtn = document.getElementById(`cart-controls-${productId}`);
         const qtyControls = document.getElementById(`quantity-controls-${productId}`);
+
         if (!qtySpan) return;
 
         let currentQty = parseInt(qtySpan.textContent);
 
         if (change === 1) {
-            $.ajax({
-                url: `/Order/AddToCart/${productId}`,
-                type: 'POST',
-                data: { productId: productId, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
-                success: function () {
+            fetch(`/Order/AddToCart/${productId}`)
+                .then(() => {
                     qtySpan.textContent = currentQty + 1;
-                },
-                error: function () {
-                    Swal.fire({
-                        title: "Error!",
-                        text: "An error occurred while updating the cart.",
-                        icon: "error"
-                    });
-                }
-            });
+                });
         } else if (change === -1 && currentQty > 1) {
-            $.ajax({
-                url: `/Order/RemoveItemFromCart/${productId}`,
-                type: 'POST',
-                data: { productId: productId, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
-                success: function () {
+            fetch(`/Order/RemoveItemFromCart/${productId}`)
+                .then(() => {
                     qtySpan.textContent = currentQty - 1;
-                },
-                error: function () {
-                    Swal.fire({
-                        title: "Error!",
-                        text: "An error occurred while updating the cart.",
-                        icon: "error"
-                    });
-                }
-            });
+                });
         } else if (change === -1 && currentQty === 1) {
-            $.ajax({
-                url: `/Order/RemoveItemFromCart/${productId}`,
-                type: 'POST',
-                data: { productId: productId, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
-                success: function () {
+            fetch(`/Order/RemoveItemFromCart/${productId}`)
+                .then(() => {
                     if (cartBtn && qtyControls) {
                         cartBtn.classList.remove('d-none');
                         qtyControls.classList.add('d-none');
                         qtySpan.textContent = 0;
                     }
-                },
-                error: function () {
-                    Swal.fire({
-                        title: "Error!",
-                        text: "An error occurred while removing from cart.",
-                        icon: "error"
-                    });
-                }
-            });
-        }
-    }
-
-    function confirmDelete(id) {
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '/Product/DeleteConfirmed',
-                    type: 'POST',
-                    data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
-                    success: function () {
-                        Swal.fire({
-                            title: "Deleted!",
-                            text: "Your product has been deleted.",
-                            icon: "success"
-                        }).then(() => {
-                            window.location.reload();
-                        });
-                    },
-                    error: function (xhr, status, error) {
-                        Swal.fire({
-                            title: "Error!",
-                            text: "An error occurred while deleting the product.",
-                            icon: "error"
-                        });
-                    }
                 });
-            }
-        });
+        }
     }
 
     function showCartMessage() {
         const messageBox = document.getElementById('cart-message');
         messageBox.classList.remove('d-none');
+
         setTimeout(() => {
             messageBox.classList.add('d-none');
         }, 2000);
     }
 </script>
-}
-</body>
-</html>

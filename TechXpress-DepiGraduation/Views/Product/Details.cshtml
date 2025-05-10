@@ -7,8 +7,6 @@ var similarProducts = ViewBag.SimilarProducts as List<TechXpress_DepiGraduation.
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - @(Model?.Name ?? "Product")</title>
     <style>
         body {
@@ -162,7 +160,7 @@ var similarProducts = ViewBag.SimilarProducts as List<TechXpress_DepiGraduation.
                                 {
                                 <div class="carousel-item @(i == 0 ? "active" : "")">
                                     <a href="@Model.Image[i]" data-lightbox="product-images" data-title="@Model.Name">
-                                        <img src="@Model.Image[i]" alt="@Model.Name Image @(i + 1)" loading="lazy" />
+                                        <img src="@Model.Image[i]" alt="@Model.Name Image @(i + 1)" loading="lazy" style="background-size: contain;" />
                                     </a>
                                 </div>
                                 }
@@ -240,7 +238,7 @@ var similarProducts = ViewBag.SimilarProducts as List<TechXpress_DepiGraduation.
             <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center">
             <a asp-action="Details" asp-route-id="@product.Id" class="text-decoration-none text-dark">
             <div class="product-card h-100 d-flex flex-column">
-            <div class="similar-product-img" style="background-image: url('@(product.Image?.Any() == true ? product.Image[0] : "https://via.placeholder.com/400")');"></div>
+                                    <div class="similar-product-img" style="background-image: url('@(product.Image?.Any() == true ? (product.Image[0].StartsWith("http") ? product.Image[0] : "/images/" + product.Image[0]): "/images/placeholder.jpg")');"></div>
             <div class="p-3 flex-grow-1">
             <h5 class="text-center fw-bold">@product.Name</h5>
             <p class="text-muted text-center" style="font-size: 0.9rem;">

@@ -43,7 +43,8 @@
                         <a asp-action="Details" asp-route-id="@v.Id" class="text-decoration-none text-dark flex-grow-1">
                             <div class="card-img">
                                 <div class="img"
-                                     style="background-image: url('@Url.Content("~/images/" + v.Image[0])'); height: 200px; background-size: contain; background-repeat: no-repeat; background-position: center;">
+                                     style="background-image: url('@(v.Image?.Any() == true ? (v.Image[0].StartsWith("http") ? v.Image[0] : "/images/" + v.Image[0]): "/images/placeholder.jpg")');
+                                     height: 200px; background-size: contain; background-repeat: no-repeat; background-position: center;">
                                 </div>
                             </div>
 

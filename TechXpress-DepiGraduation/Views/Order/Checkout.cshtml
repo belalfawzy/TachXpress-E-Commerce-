@@ -1,0 +1,277 @@
+﻿@model TechXpress_DepiGraduation.Data.ViewModel.OrderCheckoutViewModel
+@{
+    ViewData["Title"] = "Checkout";
+    var cartItems = ViewBag.CartItems as List<TechXpress_DepiGraduation.Models.ShoppingCartItem>;
+    var total = ViewBag.Total as decimal? ?? 0;
+    var shippingCost = total >= 200 ? 0 : 10;
+    var grandTotal = total + shippingCost;
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Address Section -->
+            <div class="card mb-4" style="border-radius: 10px; border: none; box-shadow: 0 4px 12px rgba(123, 97, 255, 0.1);">
+                <div class="card-header bg-white" style="border-radius: 10px 10px 0 0; border-bottom: 2px solid #7B61FF;">
+                    <h4 class="mb-0" style="color: #7B61FF;">Shipping Address</h4>
+                </div>
+                <div class="card-body">
+                    @if (Model.UserAddresses != null && Model.UserAddresses.Any())
+                    {
+                        <div class="address-options">
+                            @foreach (var address in Model.UserAddresses)
+                            {
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="selectedAddress" id="address-@address.Id"
+                                           value="@address.Id" @(address == Model.UserAddresses.First() ? "checked" : "")>
+                                    <label class="form-check-label" for="address-@address.Id">
+                                        <div class="address-card p-3" style="border-radius: 8px; border: 1px solid #e0e0e0;">
+                                            <h5>@address.AddressLine</h5>
+                                            <p>@address.Street, @address.City</p>
+                                            <p>@address.Country, @address.ZipCode</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            Please add a shipping address to proceed with your order.
+                        </div>
+                    }
+
+                    <button type="button" class="btn btn-outline-primary" style="color: #7B61FF; border-color: #7B61FF;"
+                            data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                        <i class="bi bi-plus-circle"></i> Add New Address
+                    </button>
+                </div>
+            </div>
+
+            <!-- Payment Method Section -->
+            <div class="card mb-4" style="border-radius: 10px; border: none; box-shadow: 0 4px 12px rgba(123, 97, 255, 0.1);">
+                <div class="card-header bg-white" style="border-radius: 10px 10px 0 0; border-bottom: 2px solid #7B61FF;">
+                    <h4 class="mb-0" style="color: #7B61FF;">Payment Method</h4>
+                </div>
+                <div class="card-body">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="cashOnDelivery"
+                               value="CashOnDelivery" checked>
+                        <label class="form-check-label" for="cashOnDelivery">
+                            <i class="bi bi-cash-coin fs-4" style="color: #7B61FF;"></i> Cash on Delivery
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="paypal"
+                               value="PayPal">
+                        <label class="form-check-label" for="paypal">
+                            <i class="bi bi-paypal fs-4" style="color: #0070ba;"></i> PayPal
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-lg-4">
+            <div class="card sticky-top" style="top: 20px; border-radius: 10px; border: none; box-shadow: 0 4px 12px rgba(123, 97, 255, 0.1);">
+                <div class="card-header bg-white" style="border-radius: 10px 10px 0 0; border-bottom: 2px solid #7B61FF;">
+                    <h4 class="mb-0" style="color: #7B61FF;">Order Summary</h4>
+                </div>
+                <div class="card-body">
+                    @foreach (var item in cartItems)
+                    {
+                        <div class="d-flex justify-content-between mb-3">
+                            <div>
+                                <h6 class="mb-1">@item.Product.Name</h6>
+                                <small class="text-muted">Qty: @item.Quantity</small>
+                            </div>
+                            <span>$@((item.Product.Price * item.Quantity).ToString("0.00"))</span>
+                        </div>
+                    }
+
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal</span>
+                        <span>$@total.ToString("0.00")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping</span>
+                        <span>
+                            @if (shippingCost == 0)
+                            {
+                                <span class="text-success">Free Shipping</span>
+                            }
+                            else
+                            {
+                                <span>$@shippingCost.ToString("0.00")</span>
+                            }
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Total</span>
+                        <span style="color: #7B61FF;">$@grandTotal.ToString("0.00")</span>
+                    </div>
+                    @if (total < 200)
+                    {
+                        <div class="alert alert-info mt-3">
+                            <i class="bi bi-info-circle"></i> Spend $@((200 - total).ToString("0.00")) more to get free shipping!
+                        </div>
+                    }
+                </div>
+                <div class="card-footer bg-white" style="border-radius: 0 0 10px 10px;">
+                    <button id="placeOrderBtn" class="btn btn-primary w-100" style="background-color: #7B61FF; border: none;"
+                    @(Model.UserAddresses == null || !Model.UserAddresses.Any() ? "disabled" : "")>
+                        Place Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Address Modal -->
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAddressModalLabel" style="color: #7B61FF;">Add New Address</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addAddressForm">
+                    <div class="mb-3">
+                        <label for="country" class="form-label">Country</label>
+                        <input type="text" class="form-control" id="country" placeholder="e.g., United States" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="city" class="form-label">City</label>
+                        <input type="text" class="form-control" id="city" placeholder="e.g., New York" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="street" class="form-label">Street</label>
+                        <input type="text" class="form-control" id="street" placeholder="e.g., Main Street" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="zipCode" class="form-label">Zip Code</label>
+                        <input type="text" class="form-control" id="zipCode" placeholder="e.g., 10001" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addressLine" class="form-label">Address Line</label>
+                        <input type="text" class="form-control" id="addressLine" placeholder="e.g., Apt 4B, Building 123" required>
+                        <small class="text-muted">Add any additional address details here</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" style="background-color: #7B61FF; border: none;" id="saveAddressBtn">Save Address</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            // Save new address
+            $('#saveAddressBtn').click(function() {
+                // Validate form
+                if (!$('#addAddressForm')[0].checkValidity()) {
+                    $('#addAddressForm')[0].reportValidity();
+                    return;
+                }
+
+                // Show loading state
+                $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+                $(this).prop('disabled', true);
+
+                // Create address object
+                const newAddress = {
+                    Country: $('#country').val(),
+                    City: $('#city').val(),
+                    Street: $('#street').val(),
+                    ZipCode: $('#zipCode').val(),
+                    AddressLine: $('#addressLine').val()
+                };
+
+                // AJAX call to save address
+                $.ajax({
+                    url: '@Url.Action("AddAddress", "Account")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(newAddress),
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Address Saved',
+                                text: 'Your address has been saved successfully!',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                $('#addAddressModal').modal('hide');
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                            $('#saveAddressBtn').html('Save Address');
+                            $('#saveAddressBtn').prop('disabled', false);
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Error', 'An error occurred while saving the address', 'error');
+                        $('#saveAddressBtn').html('Save Address');
+                        $('#saveAddressBtn').prop('disabled', false);
+                    }
+                });
+            });
+
+            // Place order
+            $('#placeOrderBtn').click(function() {
+                const selectedAddressId = $('input[name="selectedAddress"]:checked').val();
+                const paymentMethod = $('input[name="paymentMethod"]:checked').val();
+
+                if (!selectedAddressId) {
+                    Swal.fire('Error', 'Please select a shipping address', 'error');
+                    return;
+                }
+
+                // Show loading state
+                $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...');
+                $(this).prop('disabled', true);
+
+                $.ajax({
+                    url: '@Url.Action("PlaceOrder", "Order")',
+                    type: 'POST',
+                    data: {
+                        addressId: selectedAddressId,
+                        paymentMethod: paymentMethod,
+                        shippingCost: @shippingCost
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            window.location.href = response.redirectUrl;
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                            $('#placeOrderBtn').html('Place Order');
+                            $('#placeOrderBtn').prop('disabled', false);
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Error', 'An error occurred while placing your order', 'error');
+                        $('#placeOrderBtn').html('Place Order');
+                        $('#placeOrderBtn').prop('disabled', false);
+                    }
+                });
+            });
+
+            // Enable place order button when address is selected
+            $('input[name="selectedAddress"]').change(function() {
+                $('#placeOrderBtn').prop('disabled', false);
+            });
+        });
+    </script>
+}

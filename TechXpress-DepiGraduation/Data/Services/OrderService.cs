@@ -38,7 +38,6 @@ namespace TechXpress_DepiGraduation.Data.Services
                 var order = new Order
                 {
                     UserId = userId,
-                    PaymentStatus = "Pending",
                     OrderItems = new List<OrderItem>() 
                 };
                 await _context.Orders.AddAsync(order);

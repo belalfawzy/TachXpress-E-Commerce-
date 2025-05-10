@@ -1,6 +1,7 @@
 @model List<TechXpress_DepiGraduation.Models.Product>
 @{
-ViewData["Title"] = "Products";
+    Layout = "_Layout";
+    ViewData["Title"] = "Products";
 var quantities = ViewBag.CartQuantities as Dictionary<int, int> ?? new Dictionary<int, int>();
 }
 <!DOCTYPE html>

@@ -1,7 +1,7 @@
-@model Product
+@model TechXpress_DepiGraduation.Models.Product
 @{
-Layout = "_Layout";
-ViewData["Title"] = "Edit Product";
+    ViewData["Title"] = "Edit Product";
+    Layout = "_Layout";
 }
 
 <!DOCTYPE html>
@@ -10,233 +10,231 @@ ViewData["Title"] = "Edit Product";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - @Model.Name</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
     <style>
-        .form-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        .image-preview img {
-            max-width: 100px;
-            max-height: 100px;
-            object-fit: cover;
-            margin: 5px;
-            border-radius: 5px;
-        }
-        .color-badge {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 10px;
-            border: 1px solid #ddd;
-        }
-        .dynamic-field {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        .btn-custom {
-            background: linear-gradient(135deg, #a277a6, #cba6f7);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 8px 16px;
-        }
-        .btn-custom:hover {
-            background: linear-gradient(135deg, #7a428f, #b68adf);
-        }
-        .btn-outline-custom {
-            border: 2px solid #a277a6;
-            color: #a277a6;
-            border-radius: 50px;
-            padding: 8px 16px;
-        }
-        .btn-outline-custom:hover {
-            background: #f1e9f7;
-            color: #7a428f;
-        }
-        .error-message {
-            color: #dc3545;
-            font-size: 0.875rem;
-        }
+        .card { border-radius: 1rem; }
+        .form-label { font-weight: 500; }
+        .color-input { width: 60px; }
+        .image-preview { max-height: 100px; margin: 5px; }
+        .existing-image { position: relative; display: inline-block; }
+        .remove-image { position: absolute; top: -10px; right: -10px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; line-height: 24px; text-align: center; cursor: pointer; }
     </style>
 </head>
 <body>
-<div class="container py-5">
-    <div class="form-container">
-        <h2 class="mb-4">Edit Product: @Model.Name</h2>
-        <form asp-action="Edit" method="post" enctype="multipart/form-data">
-            <input type="hidden" asp-for="Id" />
-
-            <!-- Name -->
-            <div class="mb-3">
-                <label asp-for="Name" class="form-label">Name</label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="error-message"></span>
-            </div>
-
-            <!-- Description -->
-            <div class="mb-3">
-                <label asp-for="Description" class="form-label">Description</label>
-                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="Description" class="error-message"></span>
-            </div>
-
-            <!-- Price -->
-            <div class="mb-3">
-                <label asp-for="Price" class="form-label">Price</label>
-                <input asp-for="Price" class="form-control" type="number" step="0.01" />
-                <span asp-validation-for="Price" class="error-message"></span>
-            </div>
-
-            <!-- Category -->
-            <div class="mb-3">
-                <label asp-for="CategoryId" class="form-label">Category</label>
-                <input asp-for="CategoryId" class="form-control" type="number" />
-                <span asp-validation-for="CategoryId" class="error-message"></span>
-            </div>
-
-            <!-- Images -->
-            <div class="mb-3">
-                <label class="form-label">Images</label>
-                <div id="image-list" class="image-preview">
-                    @if (Model.Image != null && Model.Image.Any())
-                    {
-                        for (int i = 0; i < Model.Image.Count; i++)
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h2 class="card-title mb-4">Edit Product: @Model.Name</h2>
+                        @if (TempData["ErrorMessage"] != null)
                         {
-                            <div class="dynamic-field" data-index="@i">
-                                <img src="@Model.Image[i]" alt="Image @i" />
-                                <input type="hidden" name="Image[@i]" value="@Model.Image[i]" />
-                                <button type="button" class="btn btn-outline-custom btn-remove-image">Remove</button>
+                            <div class="alert alert-danger" role="alert">
+                                @TempData["ErrorMessage"]
                             </div>
                         }
-                    }
-                </div>
-                <div class="mb-2">
-                    <input type="file" class="form-control" id="newImage" accept="image/*" />
-                    <button type="button" class="btn btn-custom mt-2" id="add-image">Add Image</button>
-                </div>
-            </div>
+                        
+                        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                            <input type="hidden" asp-for="Id" />
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert" style="@(ViewData.ModelState.IsValid ? "display:none;" : "")"></div>
 
-            <!-- Colors -->
-            <div class="mb-3">
-                <label class="form-label">Colors</label>
-                <div id="color-list">
-                 
-                    @for (int i = 0; i < @Model.color.Count; i++)
-                    {
-                        <div class="dynamic-field" data-index="@i">
-                            <span class="color-badge" style="background-color: @Model.color[i];"></span>
-                            <input type="text" name="Colors[@i]" class="form-control" value="@Model.color[i]" placeholder="e.g., red or #FF0000" />
-                            <button type="button" class="btn btn-outline-custom btn-remove-color">Remove</button>
-                        </div>
-                    }
-                </div>
-                <div class="mb-2">
-                    <input type="text" class="form-control" id="newColor" placeholder="e.g., red or #FF0000" />
-                    <button type="button" class="btn btn-custom mt-2" id="add-color">Add Color</button>
-                </div>
-            </div>
+                            <!-- Images -->
+                            <div class="mb-3">
+                                <label class="form-label">Product Images</label>
+                                <div id="existing-images" class="d-flex flex-wrap mb-2">
+                                    @if (Model.Image != null && Model.Image.Any())
+                                    {
+                                        for (int i = 0; i < Model.Image.Count; i++)
+                                        {
+                                            <div class="existing-image" data-image-url="@Model.Image[i]">
+                                                <img src="@Model.Image[i]" class="image-preview" alt="Image @i" />
+                                                <button type="button" class="remove-image">×</button>
+                                                <input type="hidden" name="ExistingImages" value="@Model.Image[i]" />
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                                <input type="file" name="imageFiles" class="form-control" multiple accept="image/jpeg,image/png,image/gif,image/bmp" />
+                                <div id="image-preview-container" class="mt-2 d-flex flex-wrap"></div>
+                                <!-- Hidden input to track removed images -->
+                                <input type="hidden" name="ImagesToDelete" id="images-to-delete" />
+                                <span class="text-danger" asp-validation-for="Image"></span>
+                            </div>
 
-            <!-- Form Buttons -->
-            <div class="mb-3 d-flex gap-2">
-                <a asp-action="Index" class="btn btn-outline-custom">Cancel</a>
-                <button type="submit" class="btn btn-custom">Save</button>
+                            <!-- Name -->
+                            <div class="mb-3">
+                                <label asp-for="Name" class="form-label"></label>
+                                <input asp-for="Name" class="form-control" autocomplete="off" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-3">
+                                <label asp-for="Description" class="form-label"></label>
+                                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                                <span asp-validation-for="Description" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="mb-3">
+                                <label asp-for="Price" class="form-label"></label>
+                                <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" autocomplete="off" />
+                                <span asp-validation-for="Price" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Colors -->
+                            <div class="mb-3">
+                                <label class="form-label">Colors</label>
+                                <div id="color-container">
+                                    @if (Model.color != null && Model.color.Any())
+                                    {
+                                        foreach (var color in Model.color)
+                                        {
+                                            <div class="input-group mb-2 color-input-group">
+                                                <input type="color" class="form-control color-input" value="@color" />
+                                                <button type="button" class="btn btn-outline-danger remove-color">×</button>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="input-group mb-2 color-input-group">
+                                            <input type="color" class="form-control color-input" value="#000000" />
+                                            <button type="button" class="btn btn-outline-danger remove-color">×</button>
+                                        </div>
+                                    }
+                                </div>
+                                <button type="button" id="add-color" class="btn btn-sm btn-outline-secondary mt-2">Add Another Color</button>
+                                <input type="hidden" name="color" id="color-values" />
+                                <span asp-validation-for="color" class="text-danger"></span>
+                            </div>
+
+                            <!-- Category -->
+                            <div class="mb-3">
+                                <label asp-for="CategoryId" class="form-label">Category</label>
+                                <select asp-for="CategoryId" class="form-control" asp-items="@(new SelectList(ViewBag.Categories ?? new List<Category>(), nameof(Category.Id), nameof(Category.Name)))">
+                                    <option value="">Select a category</option>
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Form Buttons -->
+                            <div class="d-flex justify-content-end">
+                                <a asp-action="Index" class="btn btn-secondary me-2" style="background-color: #EDEDED; color: #2D2D2D;">
+                                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                                </a>
+                                <button type="submit" class="btn btn-success" style="background-color: #7B61FF;">
+                                    <i class="fas fa-save me-1"></i> Save
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
-</div>
-</body>
 
-@section Scripts {
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script asp-src-include="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-<script asp-src-include="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-<script>
-    $(document).ready(function () {
-        let imageIndex = @((Model.Image?.Count ?? 0));
-        let colorIndex = @(Model.color.Count);
+    @section Scripts {
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                // Track removed images
+                let imagesToDelete = [];
 
-        // Add Image
-        $('#add-image').click(function () {
-            const fileInput = $('#newImage');
-            const file = fileInput[0].files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const imageUrl = e.target.result; // Preview only; actual file is sent via form
-                    const html = `
-                            <div class="dynamic-field" data-index="${imageIndex}">
-                                <img src="${imageUrl}" alt="New Image" />
-                                <input type="hidden" name="NewImages[${imageIndex}]" value="new-image-${imageIndex}" />
-                                <button type="button" class="btn btn-outline-custom btn-remove-image">Remove</button>
-                            </div>`;
-                    $('#image-list').append(html);
-                    imageIndex++;
-                    fileInput.val(''); // Clear file input
-                };
-                reader.readAsDataURL(file);
-            } else {
-                alert('Please select an image file.');
-            }
-        });
-
-        // Remove Image
-        $(document).on('click', '.btn-remove-image', function () {
-            $(this).closest('.dynamic-field').remove();
-        });
-
-        // Add Color
-        $('#add-color').click(function () {
-            const color = $('#newColor').val().trim();
-            if (color && /^(#[0-9A-Fa-f]{3,6}|[a-zA-Z]+)$/.test(color)) {
-                const html = `
-                        <div class="dynamic-field" data-index="${colorIndex}">
-                            <span class="color-badge" style="background-color: ${color};"></span>
-                            <input type="text" name="Colors[${colorIndex}]" class="form-control" value="${color}" />
-                            <button type="button" class="btn btn-outline-custom btn-remove-color">Remove</button>
+                // Color input handling
+                $('#add-color').click(function () {
+                    const container = $('#color-container');
+                    const newColorGroup = `
+                        <div class="input-group mb-2 color-input-group">
+                            <input type="color" class="form-control color-input" value="#000000" />
+                            <button type="button" class="btn btn-outline-danger remove-color">×</button>
                         </div>`;
-                $('#color-list').append(html);
-                colorIndex++;
-                $('#newColor').val('');
-            } else {
-                alert('Please enter a valid color (e.g., red or #FF0000).');
-            }
-        });
+                    container.append(newColorGroup);
+                    updateColorValues();
+                });
 
-        // Remove Color
-        $(document).on('click', '.btn-remove-color', function () {
-            $(this).closest('.dynamic-field').remove();
-        });
+                $(document).on('click', '.remove-color', function () {
+                    const group = $(this).closest('.color-input-group');
+                    group.remove();
+                    updateColorValues();
+                });
 
-        // Form Submission
-        $('form').submit(function () {
-            // Ensure at least one image and color are provided
-            if ($('#image-list .dynamic-field').length === 0) {
-                alert('Please add at least one image.');
-                return false;
-            }
-            if ($('#color-list .dynamic-field').length === 0) {
-                alert('Please add at least one color.');
-                return false;
-            }
-            // Convert Colors to comma-separated string
-            const colors = $('#color-list input').map(function () {
-                return $(this).val().trim();
-            }).get().filter(c => c);
-            $('<input>').attr({
-                type: 'hidden',
-                name: 'color',
-                value: colors.join(',')
-            }).appendTo('form');
-        });
-    });
-    </script>’.
-}
+                $(document).on('input', '.color-input', updateColorValues);
+
+                function updateColorValues() {
+                    const colors = [];
+                    $('.color-input').each(function () {
+                        const color = $(this).val().trim();
+                        if (color) {
+                            colors.push(color);
+                        }
+                    });
+                    $('#color-values').val(colors.join(','));
+                    console.log('Colors:', $('#color-values').val());
+                }
+
+                updateColorValues();
+
+                // Image preview for new uploads
+                $('input[name="imageFiles"]').on('change', function (e) {
+                    const $previewContainer = $('#image-preview-container');
+                    $previewContainer.empty();
+
+                    const files = e.target.files;
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        if (file.type.match('image.*')) {
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
+                                const $img = $('<img>').attr({
+                                    src: e.target.result,
+                                    class: 'image-preview',
+                                    alt: 'Image preview'
+                                });
+                                $previewContainer.append($img);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    }
+                });
+
+                // Remove existing image from UI and track for deletion
+                $(document).on('click', '.remove-image', function () {
+                    const $imageDiv = $(this).closest('.existing-image');
+                    const imageUrl = $imageDiv.data('image-url');
+                    imagesToDelete.push(imageUrl);
+                    $('#images-to-delete').val(imagesToDelete.join(','));
+                    $imageDiv.remove();
+                    console.log('Images to delete:', imagesToDelete);
+                    console.log('Remaining images:', $('.existing-image').map(function () { return $(this).data('image-url'); }).get());
+                });
+
+                // Form submission validation
+                $('form').submit(function () {
+                    updateColorValues();
+                    const existingImages = $('#existing-images .existing-image').length;
+                    const newImages = $('input[name="imageFiles"]')[0].files.length;
+                    if (existingImages === 0 && newImages === 0) {
+                        alert('Please add at least one image.');
+                        return false;
+                    }
+                    if ($('.color-input').length === 0 || $('#color-values').val().trim() === '') {
+                        alert('Please add at least one color.');
+                        return false;
+                    }
+                    // Debug form data
+                    const formData = new FormData(this);
+                    for (let [key, value] of formData.entries()) {
+                        console.log(`FormData: ${key} = ${value}`);
+                    }
+                    return true;
+                });
+            });
+        </script>
+    }
+</body>
+</html>

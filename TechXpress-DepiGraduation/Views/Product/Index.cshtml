@@ -2,6 +2,12 @@
 @{
     var quantities = ViewBag.CartQuantities as Dictionary<int, int> ?? new Dictionary<int, int>();
 }
+@if (TempData["SuccessMessage"] != null)
+{
+<div class="alert alert-success" role="alert">
+    @TempData["SuccessMessage"]
+</div>
+}
 @if (Context.User.Identity.IsAuthenticated && User.IsInRole("Admin"))
 {
     <div class="mb-4 text-end">

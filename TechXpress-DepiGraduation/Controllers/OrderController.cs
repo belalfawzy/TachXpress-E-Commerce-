@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechXpress_DepiGraduation.Data.Cart;
+using TechXpress_DepiGraduation.Data.Enums;
 using TechXpress_DepiGraduation.Data.Services;
+using TechXpress_DepiGraduation.Data.ViewModel;
 using TechXpress_DepiGraduation.Models;
 
 namespace TechXpress_DepiGraduation.Controllers
@@ -15,13 +17,13 @@ namespace TechXpress_DepiGraduation.Controllers
         private readonly ShoppingCart _shoppingCart;
         private readonly IOrderService _orderService;
         private readonly UserManager<AppUser> _userManager;
-
-        public OrderController(IProductService productService, ShoppingCart shoppingCart,IOrderService orderService)
+        private readonly AppDbContext _context;
+        public OrderController(IProductService productService, ShoppingCart shoppingCart,IOrderService orderService,AppDbContext context)
         {
             _productService = productService;
             _shoppingCart = shoppingCart;
             _orderService = orderService;
-
+            _context = context;
         }
         public IActionResult Index()
         {
@@ -154,19 +156,86 @@ namespace TechXpress_DepiGraduation.Controllers
                return View(orders);
 
             }
+        }
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Checkout()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            
+            // Get user addresses
+            var addresses = await _context.Addresses
+                .Where(a => a.UserId == userId)
+                .ToListAsync();
+
+            // Get cart items
+            var cartItems = _shoppingCart.GetShoppingCartItems();
+            var total = _shoppingCart.GetTotal();
+
+            if (!cartItems.Any())
+            {
+                return RedirectToAction("Index");
+            }
+
+            var viewModel = new OrderCheckoutViewModel
+            {
+                UserAddresses = addresses,
+                CartItems = cartItems,
+                Total = total
+            };
+            ViewBag.CartItems = cartItems;
+            ViewBag.Total = total;
+
+            return View(viewModel);
         }
 
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> PlaceOrder(int addressId, PaymentMethod paymentMethod)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var cartItems = _shoppingCart.GetShoppingCartItems();
+
+            if (!cartItems.Any())
+            {
+                return Json(new { success = false, message = "Your cart is empty." });
+            }
+
+            // Get selected address
+            var address = await _context.Addresses
+                .FirstOrDefaultAsync(a => a.Id == addressId && a.UserId == userId);
+
+            if (address == null)
+            {
+                return Json(new { success = false, message = "Invalid shipping address." });
+            }
+
+            // Store order
+            await _orderService.StoreOrdersAsync(cartItems, userId);
+
+            // Clear shopping cart
+            await _shoppingCart.Makecartempty();
+
+            if (paymentMethod == PaymentMethod.CashOnDelivery)
+            {
+                // Implement PayPal integration here
+                // For now, just return a dummy URL
+                return Json(new
+                {
+                    success = true,
+                    redirectUrl = Url.Action("OrderCompleted", "Order")
+                });
+            }
+
+            return Json(new
+            {
+                success = true,
+                redirectUrl = Url.Action("OrderCompleted", "Order")
+            });
+        }
         public IActionResult OrderCompleted()
         {
             return View(); 
         }
-        
-        
-        
-        
-
-
     }
 }

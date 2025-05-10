@@ -24,7 +24,6 @@ namespace TechXpress_DepiGraduation
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
-            builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddScoped<ShoppingCart>(sp => ShoppingCart.GetShoppingCart(sp));
             builder.Services.AddDistributedMemoryCache();
@@ -53,7 +52,7 @@ namespace TechXpress_DepiGraduation
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-            AppDbInitializer.SeedUserAndRoleAsync(app).Wait();
+           // AppDbInitializer.SeedUserAndRoleAsync(app).Wait();
 
             app.Run();
         }

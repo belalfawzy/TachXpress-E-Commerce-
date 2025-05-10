@@ -28,7 +28,7 @@
                 @foreach (var p in Model)
                 {
                     <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id" class="product-card text-decoration-none">
-                        <img src="~/images/@p.Image[0]" alt="@p.Name" class="product-img" />
+                        <img src="@p.Image[0]" alt="@p.Name" class="product-img" />
                         <div class="product-body">
                             <div class="product-title">@p.Name</div>
                             <div class="product-desc">@(string.Join(" ", p.Description.Split(' ').Take(15)))...</div>

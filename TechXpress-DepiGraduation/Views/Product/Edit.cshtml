@@ -79,7 +79,7 @@
                             <!-- Price -->
                             <div class="mb-3">
                                 <label asp-for="Price" class="form-label"></label>
-                                <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" autocomplete="off" />
+                                <input asp-for="Price" class="form-control" type ="number" step="0.01" min="0" autocomplete="off" />
                                 <span asp-validation-for="Price" class="text-danger small"></span>
                             </div>
 
@@ -91,8 +91,9 @@
                                     {
                                         foreach (var color in Model.color)
                                         {
+                                            
                                             <div class="input-group mb-2 color-input-group">
-                                                <input type="color" class="form-control color-input" value="@color" />
+                                                <input type="color" class="form-control color-input" value="@color"/>
                                                 <button type="button" class="btn btn-outline-danger remove-color">×</button>
                                             </div>
                                         }
@@ -100,7 +101,7 @@
                                     else
                                     {
                                         <div class="input-group mb-2 color-input-group">
-                                            <input type="color" class="form-control color-input" value="#000000" />
+                                            <input type="color" class="form-control color-input" value="#000000"/>
                                             <button type="button" class="btn btn-outline-danger remove-color">×</button>
                                         </div>
                                     }
@@ -219,11 +220,12 @@
                     const existingImages = $('#existing-images .existing-image').length;
                     const newImages = $('input[name="imageFiles"]')[0].files.length;
                     if (existingImages === 0 && newImages === 0) {
-                        alert('Please add at least one image.');
+                        setInterval(()=>TempData["ErrorMessage"] = "Please add at least one image.",5000);
+                        TempData["ErrorMessage"] = null;
                         return false;
                     }
                     if ($('.color-input').length === 0 || $('#color-values').val().trim() === '') {
-                        alert('Please add at least one color.');
+                        TempData["ErrorMessage"] ='Please add at least one color.';
                         return false;
                     }
                     // Debug form data

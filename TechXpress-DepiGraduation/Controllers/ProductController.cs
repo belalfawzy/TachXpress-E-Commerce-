@@ -93,6 +93,7 @@ namespace TechXpress_DepiGraduation.Controllers
                         }
 
                         product.Image = imageUrls;
+                        product.color = product.color[0].Split(',').ToList();
                         await _productService.CreateAsync(product);
                         TempData["SuccessMessage"] = "Product created successfully!";
                         return RedirectToAction(nameof(Index));
@@ -150,140 +151,138 @@ namespace TechXpress_DepiGraduation.Controllers
                 return NotFound();
             }
             ViewBag.Categories = await _categoryService.GetAllAsync();
+            product.color = product.color[0].Split(',').ToList();
             return View(product);
         }
 
         // POST: /Product/Edit
         
 // POST: /Product/Edit
-[HttpPost]
-[Authorize(Roles = UserRoles.Admin)]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Edit(int id, Product product, IFormFile[] imageFiles, string color, string[] ExistingImages, string ImagesToDelete)
-{
-    if (id != product.Id)
-    {
-        TempData["ErrorMessage"] = "Invalid product ID.";
-        return NotFound();
-    }
-
-    // Remove Category and Image from ModelState validation
-    ModelState.Remove("Category");
-    ModelState.Remove("Image");
-    ModelState.Remove("ImagesToDelete");
-
-    // Parse and validate colors
-    List<string> colors = string.IsNullOrWhiteSpace(color)
-        ? new List<string>()
-        : color.Split(',', StringSplitOptions.RemoveEmptyEntries)
-              .Select(c => c.Trim())
-              .Where(c => !string.IsNullOrWhiteSpace(c))
-              .ToList();
-
-    if (colors.Any() && !colors.All(IsValidColor))
-    {
-        ModelState.AddModelError("color", "One or more colors are invalid.");
-    }
-
-    if (!colors.Any())
-    {
-        ModelState.AddModelError("color", "At least one color is required.");
-    }
-
-    // Retrieve the existing product from the database
-    if (ImagesToDelete == null) ImagesToDelete = "";
-    if (ModelState.IsValid)
-    {
-        try
+        [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Product product, IFormFile[] imageFiles, string color,
+            string[] ExistingImages, string ImagesToDelete)
         {
-
-            // Handle images
-            // Initialize with existing images that are still present
-            var updatedImages = ExistingImages?.Where(img => !string.IsNullOrWhiteSpace(img)).ToList() ?? new List<string>();
-            Console.WriteLine($"Existing images from form: {string.Join(", ", updatedImages)}"); // Debug
-
-            // Parse images to delete
-            var imagesToDelete = string.IsNullOrWhiteSpace(ImagesToDelete)
-                ? new List<string>()
-                : ImagesToDelete.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                               .Select(img => img.Trim())
-                               .Where(img => !string.IsNullOrWhiteSpace(img))
-                               .ToList();
-
-            // Validate at least one image will remain
-            var newImageCount = imageFiles?.Count(f => f != null && f.Length > 0)??0;
-            if (updatedImages.Count + newImageCount < 1)
+            if (id != product.Id)
             {
-                ModelState.AddModelError("Image", "At least one image is required.");
-                ViewBag.Categories = await _categoryService.GetAllAsync();
-                return View(product);
+                TempData["ErrorMessage"] = "Invalid product ID.";
+                return NotFound();
             }
 
-            var newPublicIds = new List<string>(); // Track new uploads for rollback
+            // Remove Category and Image from ModelState validation
+            ModelState.Remove("Category");
+            ModelState.Remove("Image");
+            ModelState.Remove("ImagesToDelete");
 
-            try
+            // Parse and validate colors
+            List<string> colors = string.IsNullOrWhiteSpace(color)
+                ? new List<string>()
+                : color.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(c => c.Trim())
+                    .Where(c => !string.IsNullOrWhiteSpace(c))
+                    .ToList();
+
+            if (colors.Any() && !colors.All(IsValidColor))
             {
-                foreach (var file in imageFiles.Where(f => f != null && f.Length > 0))
-                {
-                    var imageUrl = await _cloudinary.UploadImageAsync(file);
-                    updatedImages.Add(imageUrl);
-                    var publicId = ExtractPublicIdFromUrl(imageUrl);
-                    newPublicIds.Add(publicId);
-                    Console.WriteLine($"Uploaded image: {imageUrl}"); 
-                }
+                ModelState.AddModelError("color", "One or more colors are invalid.");
+            }
 
-                
-                foreach (var imageUrl in imagesToDelete)
+            if (!colors.Any())
+            {
+                ModelState.AddModelError("color", "At least one color is required.");
+            }
+
+            // Retrieve the existing product from the database
+            if (ImagesToDelete == null) ImagesToDelete = "";
+            if (ModelState.IsValid)
+            {
+                try
                 {
-                    var publicId = ExtractPublicIdFromUrl(imageUrl);
-                    if (!string.IsNullOrWhiteSpace(publicId))
+
+                    // Handle images
+                    // Initialize with existing images that are still present
+                    var updatedImages = ExistingImages?.Where(img => !string.IsNullOrWhiteSpace(img)).ToList() ??
+                                        new List<string>();
+                    Console.WriteLine($"Existing images from form: {string.Join(", ", updatedImages)}"); // Debug
+
+                    // Parse images to delete
+                    var imagesToDelete = string.IsNullOrWhiteSpace(ImagesToDelete)
+                        ? new List<string>()
+                        : ImagesToDelete.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            .Select(img => img.Trim())
+                            .Where(img => !string.IsNullOrWhiteSpace(img))
+                            .ToList();
+
+                    // Validate at least one image will remain
+                    var newImageCount = imageFiles?.Count(f => f != null && f.Length > 0) ?? 0;
+                    if (updatedImages.Count + newImageCount < 1)
                     {
-                        Console.WriteLine($"Deleting image with public ID: {publicId}"); // Debug
-                        var deletionParams = new DeletionParams(publicId);
-                        var deletionResult = await _cloudinary.DestroyAsync(deletionParams);
-                        if (deletionResult.StatusCode != System.Net.HttpStatusCode.OK)
+                        TempData["ErrorMessage"] = "You have to put at least one image";
+                        ViewBag.Categories = await _categoryService.GetAllAsync();
+                        return View(product);
+                    }
+
+                    var newPublicIds = new List<string>(); 
+
+                    try
+                    {
+                        foreach (var file in imageFiles.Where(f => f != null && f.Length > 0))
                         {
-                            Console.WriteLine($"Failed to delete image: {publicId}"); // Debug
+                            var imageUrl = await _cloudinary.UploadImageAsync(file);
+                            updatedImages.Add(imageUrl);
+                            var publicId = ExtractPublicIdFromUrl(imageUrl);
+                            newPublicIds.Add(publicId);
+                            Console.WriteLine($"Uploaded image: {imageUrl}");
                         }
+
+
+                        foreach (var imageUrl in imagesToDelete)
+                        {
+                            var publicId = ExtractPublicIdFromUrl(imageUrl);
+                            if (!string.IsNullOrWhiteSpace(publicId))
+                            {
+                                Console.WriteLine($"Deleting image with public ID: {publicId}"); // Debug
+                                var deletionParams = new DeletionParams(publicId);
+                                var deletionResult = await _cloudinary.DestroyAsync(deletionParams);
+                                if (deletionResult.StatusCode != System.Net.HttpStatusCode.OK)
+                                {
+                                    Console.WriteLine($"Failed to delete image: {publicId}"); // Debug
+                                }
+                            }
+                        }
+
+                        product.Image = updatedImages;
+                        product.color = product.color[0].Split(',').ToList();
+                        await _productService.EditAsync(product);
+                        TempData["SuccessMessage"] = "Product updated successfully!";
+                        return RedirectToAction(nameof(Index));
+                    }
+                    catch (Exception ex)
+                    {
+                        // Rollback: Delete newly uploaded images
+                        foreach (var publicId in newPublicIds.Where(id => !string.IsNullOrWhiteSpace(id)))
+                        {
+                            Console.WriteLine($"Rolling back image with public ID: {publicId}"); // Debug
+                            var deletionParams = new DeletionParams(publicId);
+                            await _cloudinary.DestroyAsync(deletionParams);
+                        }
+
+                        throw new Exception($"Failed to update product: {ex.Message}", ex);
                     }
                 }
-
-                product.Image = updatedImages;
-                Console.WriteLine($"Final updated images: {string.Join(", ", product.Image)}"); // Debug
-
-                await _productService.EditAsync(product);
-                TempData["SuccessMessage"] = "Product updated successfully!";
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                // Rollback: Delete newly uploaded images
-                foreach (var publicId in newPublicIds.Where(id => !string.IsNullOrWhiteSpace(id)))
+                catch (Exception ex)
                 {
-                    Console.WriteLine($"Rolling back image with public ID: {publicId}"); // Debug
-                    var deletionParams = new DeletionParams(publicId);
-                    await _cloudinary.DestroyAsync(deletionParams);
+                    TempData["ErrorMessage"] = $"Error updating product: {ex.Message}";
+                    Console.WriteLine($"Error: {ex.Message}"); // Debug
                 }
-                throw new Exception($"Failed to update product: {ex.Message}", ex);
             }
+
+            ViewBag.Categories = await _categoryService.GetAllAsync();
+            product.color = colors;
+            product.Image = ExistingImages?.ToList() ?? product.Image; // Preserve images for view
+            return View(product);
         }
-        catch (Exception ex)
-        {
-            TempData["ErrorMessage"] = $"Error updating product: {ex.Message}";
-            Console.WriteLine($"Error: {ex.Message}"); // Debug
-        }
-    }
-
-    ViewBag.Categories = await _categoryService.GetAllAsync();
-    product.color = colors; 
-    product.Image = ExistingImages?.ToList() ?? product.Image; // Preserve images for view
-    return View(product);
-}
-
-
-
-
-
 
         // GET: /Product/Delete/5
         [Authorize(Roles = UserRoles.Admin)]

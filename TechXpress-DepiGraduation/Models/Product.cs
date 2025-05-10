@@ -10,7 +10,7 @@ namespace TechXpress_DepiGraduation.Models
         [Required(ErrorMessage = "this Field is required")]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "Name Must be have at least 2 chars")]
         public string Name { get; set; }
-        [Required(ErrorMessage = "this Field is required")]
+        [Required(ErrorMessage = "this Field is required")] 
         [StringLength(500, MinimumLength = 10, ErrorMessage = "Description Must be have at least 10 chars")]
         public string Description { get; set; }
         [Required(ErrorMessage = "this Field is required")]

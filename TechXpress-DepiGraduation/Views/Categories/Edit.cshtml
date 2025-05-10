@@ -5,13 +5,191 @@
     ViewData["Title"] = "Edit Category";
 }
 
+<style>
+    .edit-category-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 2.5rem 1rem;
+        background-color:white;
+        border-radius: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
 
-<div class="row">
+        .edit-category-container h2 {
+            color: #7B61FF;
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
 
-    <h2 class=" text-center"  style="color: #2D2D2D;">Edit Category</h2>
-    <div class=" col-md-6 offset-3">
-        <form asp-action="Edit">
+        .edit-category-container .alert {
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .edit-category-container .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+            .edit-category-container .form-group label {
+                color: #2D2D2D;
+                font-weight: 500;
+                margin-bottom: 0.5rem;
+                display: block;
+            }
+
+        .edit-category-container .form-control {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .edit-category-container .form-control:focus {
+                border-color: #7B61FF;
+                box-shadow: 0 0 5px rgba(123, 97, 255, 0.3);
+                outline: none;
+            }
+
+        .edit-category-container textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .edit-category-container .text-danger {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .edit-category-container .form-control[type="file"] {
+            padding: 0.5rem;
+            border: 1px dashed #7B61FF;
+            background-color: #fff;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+            .edit-category-container .form-control[type="file"]:hover {
+                background-color: #f9f7ff;
+            }
+
+        .edit-category-container .current-image-preview {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+            .edit-category-container .current-image-preview img {
+                max-width: 200px;
+                max-height: 200px;
+                object-fit: contain;
+                border-radius: 12px;
+                border: 1px solid #ddd;
+                background-color: #f8f9fa;
+                padding: 0.5rem;
+            }
+
+        .edit-category-container .btn-save,
+        .edit-category-container .btn-cancel {
+            padding: 0.75rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .edit-category-container .btn-save {
+            background-color: #7B61FF;
+            color: white;
+        }
+
+            .edit-category-container .btn-save:hover {
+                background-color: #684DDF;
+                box-shadow: 0 4px 15px rgba(123, 97, 255, 0.3);
+                transform: scale(1.05);
+            }
+
+                .edit-category-container .btn-save:hover i {
+                    color: #f5f4fa;
+                }
+
+        .edit-category-container .btn-cancel {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+            .edit-category-container .btn-cancel:hover {
+                background-color: #c0392b;
+                box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+                transform: scale(1.05);
+            }
+
+                .edit-category-container .btn-cancel:hover i {
+                    color: #fff0f0;
+                }
+
+            .edit-category-container .btn-save i,
+            .edit-category-container .btn-cancel i {
+                transition: color 0.3s ease;
+            }
+
+    @@media (max-width: 576px) {
+        .edit-category-container h2 {
+            font-size: 1.75rem;
+        }
+
+        .edit-category-container {
+            padding: 1.5rem 0.75rem;
+        }
+
+            .edit-category-container .btn-save,
+            .edit-category-container .btn-cancel {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+
+            .edit-category-container .current-image-preview img {
+                max-width: 150px;
+                max-height: 150px;
+            }
+    }
+</style>
+
+<div class="edit-category-container">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success text-center" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger text-center" role="alert">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    <h2 class="text-center">
+      Edit Category
+    </h2>
+    <div class="col-md-8 offset-md-2">
+        <form asp-action="Edit" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label asp-for="ImageName" class="form-label">Category Image</label>
+                @if (!string.IsNullOrEmpty(Model.ImageName))
+                {
+                    <div class="current-image-preview">
+                        <img src="~/images/categories/@Model.ImageName" alt="Current Category Image" class="img-fluid" onerror="this.src='/images/fallback-category.png';" />
+                        <p class="text-muted mt-1">Current Image</p>
+                    </div>
+                }
+                <input type="file" name="ImageFile" class="form-control" />
+                <input type="hidden" asp-for="ImageName" />
+
+            </div>
             <div class="form-group">
                 <label asp-for="Name"></label>
                 <input asp-for="Name" class="form-control" />
@@ -19,16 +197,17 @@
             </div>
             <div class="form-group">
                 <label asp-for="Description"></label>
-                <textarea asp-for="Description" class="form-control"> </textarea>
+                <textarea asp-for="Description" class="form-control"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <br />
-            <div class="form-group">
-                <button type="submit" class="btn edit float-end">Save</button>
-                <a asp-action="Index" class="btn back">Cancel</a>
+            <div class="form-group d-flex justify-content-between mt-4">
+                <a asp-action="Index" class="btn btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-save">
+                    <i class="fas fa-save"></i> Save
+                </button>
             </div>
-
-
         </form>
     </div>
 </div>

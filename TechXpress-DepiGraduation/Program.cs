@@ -7,7 +7,7 @@ using TechXpress_DepiGraduation.Models;
 
 namespace TechXpress_DepiGraduation
 {
-    public class Program 
+    public class Program
     {
         public static void Main(string[] args)
         {
@@ -32,6 +32,7 @@ namespace TechXpress_DepiGraduation
             builder.Services.AddMemoryCache();
             builder.Services.AddAuthorization();
             builder.Services.AddControllersWithViews();
+            builder.Services.AddSingleton<IConfiguration>(provider => builder.Configuration);
 
             builder.Services.AddSingleton<CloudinaryIntegration>();
             var app = builder.Build();
@@ -41,6 +42,7 @@ namespace TechXpress_DepiGraduation
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -52,7 +54,7 @@ namespace TechXpress_DepiGraduation
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-           // AppDbInitializer.SeedUserAndRoleAsync(app).Wait();
+            // AppDbInitializer.SeedUserAndRoleAsync(app).Wait();
 
             app.Run();
         }

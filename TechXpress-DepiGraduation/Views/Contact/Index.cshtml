@@ -1,0 +1,140 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Contact Us";
+}
+
+<div class="container py-5">
+    <!-- Page Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-dark">Get in Touch</h1>
+        <p class="lead text-muted">We'd love to hear from you! Reach out with any questions or inquiries.</p>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="row g-5">
+        <!-- Contact Form -->
+        <div class="col-md-6">
+            <h3 class="mb-4 text-dark">Send Us a Message</h3>
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-success" role="alert">
+                    @TempData["Message"]
+                </div>
+            }
+            <form asp-action="Index" asp-controller="Contact" method="post">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="subject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
+                </div>
+                <div class="mb-3">
+                    <label for="message" class="form-label">Message</label>
+                    <textarea class="form-control" id="message" name="message" rows="5" placeholder="Your Message" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="col-md-6">
+            <h3 class="mb-4 text-dark">Contact Information</h3>
+            <ul class="list-unstyled contact-info">
+                <li class="mb-3">
+                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                    123 Tech Street, Cairo, Egypt
+                </li>
+                <li class="mb-3">
+                    <i class="fas fa-envelope me-2 text-primary"></i>
+                    <a href="mailto:support@techxpress.com" class="text-dark">support@techxpress.com</a>
+                </li>
+                <li class="mb-3">
+                    <i class="fas fa-phone-alt me-2 text-primary"></i>
+                    <a href="tel:+201234567890" class="text-dark">+20 123 456 7890</a>
+                </li>
+                <li class="mb-3">
+                    <i class="fas fa-globe me-2 text-primary"></i>
+                    Follow us on:
+                    <a href="https://www.facebook.com" class="text-primary ms-2"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.twitter.com" class="text-primary ms-2"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com" class="text-primary ms-2"><i class="fab fa-instagram"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .text-dark {
+        color: #333 !important;
+    }
+
+    .text-primary {
+        color: #6B4E9E !important; 
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        padding: 0.75rem;
+        transition: border-color 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: #6B4E9E; 
+            box-shadow: 0 0 5px rgba(107, 78, 158, 0.3); 
+            outline: none;
+        }
+
+    .btn-primary {
+        background-color: #6B4E9E; 
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: #5A3E8C; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 78, 158, 0.3); 
+        }
+
+    .contact-info i {
+        font-size: 1.2rem;
+    }
+
+    .contact-info a {
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+        .contact-info a:hover {
+            color: #6B4E9E !important; 
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .row
+
+    {
+        flex-direction: column;
+    }
+
+    .col-md-6 {
+        width: 100%;
+    }
+
+    }
+</style>

@@ -17,37 +17,36 @@ html {
   min-height: 100%;
 }
 
-/*.btn {
-    font-size: 16px;
+    /*search in nav bar */
+
+.btn-offwhite {
+    background-color: #FAFAFA; 
+    color: #333; 
+    border: 1px solid #E0E0E0;
     padding: 10px 24px;
-    color: white;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    border-radius: 30px; 
+    text-decoration: none; 
+    display: inline-flex; 
+    align-items: center; 
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease; 
 }
 
-    .btn.create, .btn.edit {
-        background-color: #a277a6;
+    .btn-offwhite:hover {
+        background-color: #F0F0F0; 
+        color: #333;
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+        text-decoration: none;
     }
 
-    .btn.back {
-        background-color: #808080;
+    .btn-offwhite:active {
+        transform: scale(0.98); 
     }
 
-
-    .btn:hover {
-        transform: scale(1.05); 
+    .btn-offwhite i {
+        margin-right: 8px; 
+        color: #333; 
     }
-
-    .btn.create:hover, .btn.edit:hover {
-        background-color: #8c6d8b; 
-    }
-
-    .btn.back:hover {
-        background-color: #707070;  
-    }*/
-    /*search in nav bar */
 .search-input {
     max-width: 160px;
     background-color: #f2f2f2;
@@ -160,19 +159,6 @@ html {
         margin-bottom: 1rem;
     }
 
-.btn-purple {
-    background-color: #7B61FF;
-    color: white;
-    border-radius: 30px;
-    padding: 12px 28px;
-    font-weight: 500;
-    border: none;
-    transition: background-color 0.3s ease;
-}
-
-    .btn-purple:hover {
-        background-color: #684ddf;
-    }
 
 .btn-outline-secondary {
     border: none;
@@ -594,7 +580,7 @@ body {
                 transform: scale(0.95);
             }
 
-@@media (max-width: 768px) {
+@media (max-width: 768px) {
     .category-card .card-img-top {
         height: 150px;
     }
@@ -608,7 +594,7 @@ body {
     }
 }
 
-@@media (max-width: 576px) {
+@media (max-width: 576px) {
     .category-page-container h2 {
         font-size: 1.75rem;
     }

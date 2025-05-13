@@ -105,6 +105,7 @@
         fetch(`/Order/AddToCart/${productId}`)
             .then(response => {
                 if (response.ok) {
+                     updateCartCount();
                     showCartMessage();
 
                     const cartBtn = document.getElementById(`cart-controls-${productId}`);
@@ -138,22 +139,26 @@
             fetch(`/Order/AddToCart/${productId}`)
                 .then(() => {
                     qtySpan.textContent = currentQty + 1;
+                     updateCartCount();
                 });
         } else if (change === -1 && currentQty > 1) {
-            fetch(`/Order/RemoveItemFromCart/${productId}`)
+            fetch(`/Order/DecreaseFromCart/${productId}`)
                 .then(() => {
                     qtySpan.textContent = currentQty - 1;
+                     updateCartCount();
                 });
         } else if (change === -1 && currentQty === 1) {
-            fetch(`/Order/RemoveItemFromCart/${productId}`)
+            fetch(`/Order/DecreaseFromCart/${productId}`)
                 .then(() => {
                     if (cartBtn && qtyControls) {
                         cartBtn.classList.remove('d-none');
                         qtyControls.classList.add('d-none');
                         qtySpan.textContent = 0;
+                         updateCartCount();
                     }
                 });
         }
+        
     }
 
     function showCartMessage() {

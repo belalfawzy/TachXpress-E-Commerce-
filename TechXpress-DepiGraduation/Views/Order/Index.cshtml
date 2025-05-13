@@ -18,7 +18,7 @@
             <i class="fas fa-shopping-cart fa-4x mb-3 text-muted"></i>
             <h4 class="text-muted mb-2">Oops! Your cart is empty.</h4>
             <p class="mb-4">Browse our products and add some items to your cart.</p>
-            <a href="/Product" class="btn btn-purple" style="background-color: #7B61FF; color: white; padding: 10px 24px; border-radius: 30px;">
+            <a href="/Product" class="btn btn-purple">
                 <i class="fas fa-arrow-left me-1"></i> Continue Shopping
             </a>
         </div>
@@ -56,21 +56,20 @@
 
         <div class="cart-summary text-end">
             <h4>Total: <strong id="cart-total">@total.ToString("C")</strong></h4>
-
             <div class="mt-3 d-flex justify-content-between">
-                <a href="/Product" class="btn btn-outline-secondary" style="border-radius: 30px;">
+                <a href="/Product" class="btn btn-offwhite">
                     <i class="fas fa-arrow-left me-1"></i> Continue Shopping
                 </a>
 
                 @if (HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
                 {
-                    <a href="/Order/Checkout" class="btn" style="background-color: #7B61FF; color: white; padding: 10px 30px; border-radius: 30px;">
+                    <a href="/Order/Checkout" class="btn btn-purple">
                         <i class="fas fa-check-circle me-1"></i> Proceed to checkout
                     </a>
                 }
                 else
                 {
-                    <a href="/Account/Login?returnUrl=/Order/Checkout" class="btn" style="background-color: #7B61FF; color: white; padding: 10px 30px; border-radius: 30px;">
+                    <a href="/Account/Login?returnUrl=/Order/Checkout" class="btn btn-purple" style="background-color: #7B61FF; color: white; padding: 10px 30px; border-radius: 30px;">
                         <i class="fas fa-sign-in-alt me-1"></i> Proceed to checkout
                     </a>
                 }
@@ -131,7 +130,7 @@
                             <i class="fas fa-shopping-cart fa-4x mb-3 text-muted"></i>
                             <h4 class="text-muted mb-2">Oops! Your cart is empty.</h4>
                             <p class="mb-4">Browse our products and add some items to your cart.</p>
-                            <a href="/Product" class="btn" style="background-color: #7B61FF; color: white; padding: 10px 24px; border-radius: 30px;">
+                            <a href="/Product" class="btn btn-purple" >
                                 <i class="fas fa-arrow-left me-1"></i> Continue Shopping
                             </a>
                         </div>
@@ -172,7 +171,7 @@
                         <i class="fas fa-shopping-cart fa-4x mb-3 text-muted"></i>
                         <h4 class="text-muted mb-2">Oops! Your cart is empty.</h4>
                         <p class="mb-4">Browse our products and add some items to your cart.</p>
-                        <a href="/Product" class="btn" style="background-color: #7B61FF; color: white; padding: 10px 24px; border-radius: 30px;">
+                        <a href="/Product" class="btn btn-purple" style="background-color: #7B61FF; color: white; padding: 10px 24px; border-radius: 30px;">
                             <i class="fas fa-arrow-left me-1"></i> Continue Shopping
                         </a>
                     </div>

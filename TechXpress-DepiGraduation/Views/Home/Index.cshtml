@@ -1,55 +1,355 @@
-﻿@model IEnumerable<Product>
+﻿@using System.Linq
+@model TechXpress_DepiGraduation.Data.ViewModel.HomeViewModel
+
 @{
     Layout = "_Layout";
-    ViewData["Title"] = "Products";
+    ViewData["Title"] = "Home";
 }
-<!DOCTYPE html>
-<html>
-<head>
-    <title>TechXpress</title>
-   
-</head>
-<body>
-    <div class="container py-4">
 
-        <div class="hero">
-            <h1><i class="fas fa-tags me-2"></i>Discounts up to 50%</h1>
-            <p>Explore the latest tech deals and save big on top products!</p>
-            <a asp-controller="Product" asp-action="Index" class="btn">Discover All Products</a>
-        </div>
-
-        <h2 class="mb-4">Featured Products</h2>
-
-        <div class="carousel-wrapper">
-            <i class="fas fa-chevron-left arrow-btn arrow-left" onclick="scrollCarousel(-1)"></i>
-            <i class="fas fa-chevron-right arrow-btn arrow-right" onclick="scrollCarousel(1)"></i>
-
-            <div class="product-carousel" id="carousel">
-                @foreach (var p in Model)
-                {
-                    <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id" class="product-card text-decoration-none">
-                        <img src="@p.Image[0]" alt="@p.Name" class="product-img" />
-                        <div class="product-body">
-                            <div class="product-title">@p.Name</div>
-                            <div class="product-desc">@(string.Join(" ", p.Description.Split(' ').Take(15)))...</div>
-                            <div class="product-price">$@p.Price</div>
-                        </div>
-                    </a>
-                }
-
-                <a asp-controller="Product" asp-action="Create" class="product-card add-card text-decoration-none">
-                    <i class="fas fa-plus"></i>
-                </a>
-            </div>
+<div class="container py-4">
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Discover Your Perfect Device</h1>
+            <p>Shop the latest tech for work and play!</p>
+            <a asp-controller="Product+" asp-action="Index" class="btn btn-primary">Shop Now</a>
         </div>
     </div>
 
-    <script>
-        function scrollCarousel(direction) {
-            const carousel = document.getElementById('carousel');
-            const scrollAmount = 300;
-            carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    <!-- Categories Section -->
+    <div class="categories-section">
+        <h2 class="mb-4">Explore Categories</h2>
+        <div class="categories-list">
+            @if (Model.Categories != null && Model.Categories.Any())
+            {
+                @foreach (var category in Model.Categories)
+                {
+                    <a asp-controller="Categories" asp-action="Details" asp-route-id="@category.Id" class="category-btn">@category.Name</a>
+                }
+            }
+            else
+            {
+                <p class="text-muted">No categories available.</p>
+            }
+            <a asp-controller="Categories" asp-action="Index" class="category-btn">View All</a>
+        </div>
+    </div>
+
+    <!-- Featured Products Section -->
+    <div class="featured-products">
+        <h2 class="mb-4">Featured Products</h2>
+        <div class="carousel-wrapper">
+            <button class="arrow-btn arrow-left" onclick="scrollCarousel(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="arrow-btn arrow-right" onclick="scrollCarousel(1)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+
+            <div class="product-carousel" id="carousel">
+                @if (Model.Products != null && Model.Products.Any())
+                {
+                    @foreach (var p in Model.Products)
+                    {
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id" class="product-card text-decoration-none">
+                            <img src="@p.Image[0]" alt="@p.Name" class="product-img" onerror="this.onerror=null; this.src='/images/fallback-product.png';" />
+                            <div class="product-body">
+                                <div class="product-title">@p.Name</div>
+                                <div class="product-desc">@(string.Join(" ", p.Description.Split(' ').Take(15)))...</div>
+                                <div class="product-price">$@p.Price</div>
+                            </div>
+                        </a>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">No products available.</p>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* General Container */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Hero Section */
+    .hero {
+        position: relative;
+        height: 500px;
+        background-image: url('/images/homepage-bg.jpg');
+        background-size: cover;
+        background-position: center;
+        border-radius: 15px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
         }
-    </script>
-</body>
-</html>
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        color: #fff;
+    }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-content .btn-primary {
+            background-color: #5a9bd5;
+            color: #fff;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+            .hero-content .btn-primary:hover {
+                background-color: #4a89c2;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(90, 155, 213, 0.3);
+            }
+
+    /* Categories Section */
+    .categories-section {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+        .categories-section h2 {
+            color: #333;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+    .categories-list {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 1.5rem;
+    }
+
+    .category-btn {
+        background-color: #f8f9fa;
+        color: #7B61FF;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid #7B61FF;
+    }
+
+        .category-btn:hover {
+            background-color: #684DDF;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(90, 155, 213, 0.3);
+        }
+
+    /* Featured Products Section */
+    .featured-products h2 {
+        color: #333;
+        font-size: 2rem;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .carousel-wrapper {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .product-carousel {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        padding: 1rem 0;
+    }
+
+        .product-carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+    .product-card {
+        flex: 0 0 220px;
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        text-align: center;
+        transition: transform 0.3s ease;
+        scroll-snap-align: start;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+    .product-img {
+        max-width: 100%;
+        height: 150px;
+        object-fit: contain;
+        border-radius: 10px;
+        margin-bottom: 0.75rem;
+    }
+
+    .product-body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .product-title {
+        font-size: 1.1rem;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .product-desc {
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .product-price {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #7B61FF;
+    }
+
+    .add-card {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        border: 2px dashed #5a9bd5;
+    }
+
+        .add-card i {
+            font-size: 2rem;
+            color: #5a9bd5;
+        }
+
+        .add-card:hover {
+            background-color: #e9ecef;
+            transform: translateY(-5px);
+        }
+
+    .arrow-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.2rem;
+        z-index: 10;
+        transition: background-color 0.3s ease;
+    }
+
+        .arrow-btn:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+    .arrow-left {
+        left: 10px;
+    }
+
+    .arrow-right {
+        right: 10px;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .hero {
+            height: 400px;
+        }
+
+        .hero-content h1 {
+            font-size: 2rem;
+        }
+
+        .hero-content p {
+            font-size: 1rem;
+        }
+
+        .product-card {
+            flex: 0 0 180px;
+        }
+
+        .category-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .hero {
+            height: 300px;
+        }
+
+        .hero-content h1 {
+            font-size: 1.5rem;
+        }
+
+        .categories-list {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .category-btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+<script>
+    function scrollCarousel(direction) {
+        const carousel = document.getElementById('carousel');
+        const scrollAmount = 240;
+        carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    }
+</script>

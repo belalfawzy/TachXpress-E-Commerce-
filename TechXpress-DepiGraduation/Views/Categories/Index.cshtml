@@ -5,6 +5,12 @@
     ViewData["Title"] = "Categories";
 }
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success text-center" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
 
     @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
     {
@@ -68,6 +74,14 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        const successMsg = '@TempData["SuccessMessage"]';
+        if (successMsg) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: successMsg
+            });
+        }
         function confirmDelete(event, id) {
             event.preventDefault(); // Explicitly use the event parameter
 
@@ -108,5 +122,6 @@
             });
             return false;
         }
+
     </script>
 }

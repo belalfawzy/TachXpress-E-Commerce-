@@ -31,71 +31,53 @@ namespace TechXpress_DepiGraduation.Controllers
         [HttpPost]
         [Authorize(Roles = UserRoles.Admin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormFile ImageFile)
+        public async Task<IActionResult> Create(Category category, IFormFile ImageFile)
         {
-            var newCategory = new Category
-            {
-                Name = Request.Form["Name"],
-                Description = Request.Form["Description"]
-            };
+            
+            ModelState.Remove("ImageName");
 
-            // التحقق اليدوي من الحقول
-            if (string.IsNullOrEmpty(newCategory.Name) || newCategory.Name.Length < 2)
+           
+            if (ImageFile == null || ImageFile.Length == 0)
             {
-                TempData["ErrorMessage"] = "Name is required and must be at least 2 characters.";
-                return View(newCategory);
+                ModelState.AddModelError("ImageName", "Please upload an image.");
             }
-
-            if (!System.Text.RegularExpressions.Regex.IsMatch(newCategory.Name, @"^[a-zA-Z\s]+$"))
+            else
             {
-                TempData["ErrorMessage"] = "Category Name must contain only letters.";
-                return View(newCategory);
-            }
-
-            if (string.IsNullOrEmpty(newCategory.Description) || newCategory.Description.Length < 10)
-            {
-                TempData["ErrorMessage"] = "Description is required and must be at least 10 characters.";
-                return View(newCategory);
-            }
-
-            // التحقق من الصورة ورفعها
-            if (ImageFile != null && ImageFile.Length > 0)
-            {
-                var uploads = Path.Combine("wwwroot/images/categories");
-                var uniqueName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
-                var path = Path.Combine(uploads, uniqueName);
-
-                using (var stream = new FileStream(path, FileMode.Create))
+                try
                 {
-                    await ImageFile.CopyToAsync(stream);
+                    var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/categories");
+                    if (!Directory.Exists(uploads))
+                    {
+                        Directory.CreateDirectory(uploads);
+                    }
+                    var uniqueName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
+                    var path = Path.Combine(uploads, uniqueName);
+
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await ImageFile.CopyToAsync(stream);
+                    }
+
+                    category.ImageName = uniqueName;
                 }
-
-                newCategory.ImageName = uniqueName;
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("ImageName", $"Failed to upload image: {ex.Message}");
+                }
             }
 
-            // التحقق من وجود الصورة
-            if (string.IsNullOrEmpty(newCategory.ImageName))
+          
+            ModelState.Remove("Products");
+
+            if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Please upload an image.";
-                return View(newCategory);
+                return View(category);
             }
 
-
-            await _categoryservice.CreateAsync(newCategory);
-            //TempData["SuccessMessage"] = "Category created successfully!";
+            await _categoryservice.CreateAsync(category);
+            TempData["SuccessMessage"] = "Category created successfully!";
             return RedirectToAction(nameof(Index));
         }
-        public async Task<IActionResult> Details(int id)
-        {
-            var category = await _categoryservice.GetItemByIdAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-            return View(category);
-        }
-
-        
         public async Task<IActionResult> Edit(int id)
         {
             var category = await _categoryservice.GetItemByIdAsync(id);
@@ -112,7 +94,7 @@ namespace TechXpress_DepiGraduation.Controllers
             if (existingCategory == null)
                 return NotFound();
 
-    
+
             existingCategory.Name = Request.Form["Name"];
             existingCategory.Description = Request.Form["Description"];
 
@@ -128,7 +110,7 @@ namespace TechXpress_DepiGraduation.Controllers
                 return View(existingCategory);
             }
 
-       
+
             if (ImageFile != null && ImageFile.Length > 0)
             {
                 if (!string.IsNullOrEmpty(existingCategory.ImageName))
@@ -150,7 +132,7 @@ namespace TechXpress_DepiGraduation.Controllers
                 existingCategory.ImageName = uniqueName;
             }
 
-    
+
             if (string.IsNullOrEmpty(existingCategory.ImageName))
             {
                 TempData["ErrorMessage"] = "Please upload an image.";
@@ -159,6 +141,22 @@ namespace TechXpress_DepiGraduation.Controllers
 
             await _categoryservice.EditAsync(existingCategory);
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var category = await _categoryservice.GetItemByIdAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            if (category.Products == null)
+            {
+                category.Products = new List<Product>(); 
+            }
+
+            return View(category);
         }
 
         [HttpPost]

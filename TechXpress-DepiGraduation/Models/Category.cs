@@ -14,8 +14,8 @@ namespace TechXpress_DepiGraduation.Models
         [StringLength(500, MinimumLength = 10, ErrorMessage = "Description Must be have at least 10 chars")]
         public string Description { get; set; }
         public List<Product> Products { get; set; }
-        [Required(ErrorMessage = "this Field is required")]
-        public string ImageName { get; set; }
+
+        public string ImageName { get; set; } 
 
     }
 }

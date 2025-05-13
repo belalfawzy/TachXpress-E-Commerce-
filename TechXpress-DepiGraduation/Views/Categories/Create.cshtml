@@ -75,7 +75,7 @@
             }
 
         .create-category-container .btn-create,
-        .create-category-container .btn-back {
+        .create-category-container .btn-cancel {
             padding: 0.75rem 1.5rem;
             border-radius: 30px;
             font-weight: 500;
@@ -101,23 +101,23 @@
                     color: #f5f4fa;
                 }
 
-        .create-category-container .btn-back {
+        .create-category-container .btn-cancel {
             background-color: #e74c3c;
             color: white;
         }
 
-            .create-category-container .btn-back:hover {
+            .create-category-container .btn-cancel:hover {
                 background-color: #c0392b;
                 box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
                 transform: scale(1.05);
             }
 
-                .create-category-container .btn-back:hover i {
+                .create-category-container .btn-cancel:hover i {
                     color: #fff0f0;
                 }
 
             .create-category-container .btn-create i,
-            .create-category-container .btn-back i {
+            .create-category-container .btn-cancel i {
                 transition: color 0.3s ease;
             }
 
@@ -131,7 +131,7 @@
         }
 
             .create-category-container .btn-create,
-            .create-category-container .btn-back {
+            .create-category-container .btn-cancel {
                 padding: 0.5rem 1rem;
                 font-size: 0.875rem;
             }
@@ -139,38 +139,32 @@
 </style>
 
 <div class="create-category-container">
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success text-center" role="alert">
-            @TempData["SuccessMessage"]
-        </div>
-    }
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger text-center" role="alert">
-            @TempData["ErrorMessage"]
-        </div>
-    }
+
     <h2 class="text-center">
-        <i class="fas fa-plus-circle me-2"></i> Add New Category
+       Add New Category
     </h2>
     <div class="col-md-8 offset-md-2">
-        <form asp-action="Create" enctype="multipart/form-data">
+        <form asp-action="Create" onsubmit="return validateImageUpload()" enctype="multipart/form-data" id="create-form">
             @Html.AntiForgeryToken()
             <div class="form-group">
                 <label asp-for="Name"></label>
                 <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Description"></label>
                 <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="ImageName" class="form-label">Category Image</label>
-                <input type="file" name="ImageFile" class="form-control" />
+                <label class="form-label">Category Image</label>
+                <input type="file" name="ImageFile" id="ImageFile" class="form-control" />
+                <span id="image-error" class="text-danger"></span>
             </div>
+
             <div class="form-group d-flex justify-content-between mt-4">
-                <a asp-action="Index" class="btn btn-back">
+                <a asp-action="Index" class="btn btn-cancel">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
                 <button type="submit" class="btn btn-create">
@@ -181,8 +175,38 @@
     </div>
 </div>
 
+
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+         function validateImageUpload() {
+            const imageInput = document.getElementById("ImageFile");
+            const errorSpan = document.getElementById("image-error");
+            errorSpan.textContent = "";
+
+            if (!imageInput.files || imageInput.files.length === 0) {
+                errorSpan.textContent = "Please upload an image.";
+                return false;
+            }
+
+            return true; 
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("create-form");
+            const imageInput = document.getElementById("ImageFile");
+            const errorSpan = document.getElementById("image-error");
+
+            form.addEventListener("submit", function (e) {
+             
+                errorSpan.textContent = "";
+
+              
+                if (!imageInput.files || imageInput.files.length === 0) {
+                    e.preventDefault();
+                    errorSpan.textContent = "Please upload an image.";
+                }
+            });
+        });
+    </script>
 }

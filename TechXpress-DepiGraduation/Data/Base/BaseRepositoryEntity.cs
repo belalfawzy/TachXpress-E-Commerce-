@@ -14,13 +14,13 @@ namespace TechXpress_DepiGraduation.Data.Base
         {
             await _context.Set<T>().AddAsync(entity);
             await _context.SaveChangesAsync();
-            
+
         }
 
         public async Task DeleteAsync(int id)
         {
             var entity = await _context.Set<T>().FirstOrDefaultAsync(i => i.Id == id);
-            if(entity != null)
+            if (entity != null)
             {
                 _context.Set<T>().Remove(entity);
                 await _context.SaveChangesAsync();
@@ -36,9 +36,18 @@ namespace TechXpress_DepiGraduation.Data.Base
 
         public async Task<List<T>> GetAllAsync()
             => await _context.Set<T>().ToListAsync();
-        
+
 
         public async Task<T> GetItemByIdAsync(int id)
-            => await _context.Set<T>().FirstOrDefaultAsync(i => i.Id == id);
+        {
+            
+            if (typeof(T) == typeof(Category))
+            {
+                return await _context.Set<T>()
+                    .Include("Products") 
+                    .FirstOrDefaultAsync(i => i.Id == id);
+            }
+            return await _context.Set<T>().FirstOrDefaultAsync(i => i.Id == id);
+        }
     }
 }

@@ -1,13 +1,15 @@
-@model TechXpress_DepiGraduation.Models.Product
+@model Product
 @{
-Layout = "_Layout";
-ViewData["Title"] = "Product Details";
-var similarProducts = ViewBag.SimilarProducts as List<TechXpress_DepiGraduation.Models.Product> ?? new List<TechXpress_DepiGraduation.Models.Product>();
+    Layout = "_Layout";
+ViewData["Title"] = "Details";
+
+var similarProducts = ViewBag.SimilarProducts as List<Product> ?? new List<Product>();
+var quantities = ViewBag.CartQuantities as Dictionary<int, int> ?? new Dictionary<int, int>();
+var hasInCart = quantities.ContainsKey(@Model.Id);
+var qty = hasInCart ? quantities[@Model.Id] : 0;
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>@ViewData["Title"] - @(Model?.Name ?? "Product")</title>
+
+<div>
     <style>
         body {
             background-color: #f4f6f8;
@@ -28,7 +30,7 @@ var similarProducts = ViewBag.SimilarProducts as List<TechXpress_DepiGraduation.
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
-        .product-card {
+        .product-card { 
             background: white;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
@@ -64,23 +66,9 @@ var similarProducts = ViewBag.SimilarProducts as List<TechXpress_DepiGraduation.
             border-radius: 5px;
             margin: 0 5px;
         }
-        .thumbnail.active, .thumbnail:hover {
+         .thumbnail:hover {
             opacity: 1;
             border: 2px solid #7B61FF;
-        }
-        .btn-custom {
-            padding: 0.75rem 1.75rem;
-            font-size: 1rem;
-            font-weight: bold;
-            background: #7B61FF;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            transition: background 0.3s ease, transform 0.3s ease;
-        }
-        .btn-custom:hover {
-            background: #6A52D9;
-            transform: translateY(-2px);
         }
         .btn-outline-custom {
             padding: 0.75rem 1.75rem;
@@ -123,12 +111,27 @@ var similarProducts = ViewBag.SimilarProducts as List<TechXpress_DepiGraduation.
             flex-direction: column;
             gap: 10px;
         }
+
+        .btn.btn-sm.btn-primary {
+            width:100%;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+            background: #7B61FF;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .btn.btn-sm.btn-primary:hover {
+            background: #6A52D9;
+            transform: translateY(-2px);
+        }
         
     </style>
-</head>
-<body>
+</div>
+
 <div class="container-fluid py-5">
-    <!-- Hero Section -->
     <div class="hero fade-in">
         <h1><i class="fas fa-box-open me-2"></i>@(Model?.Name ?? "Product Details")</h1>
     </div>
@@ -200,18 +203,37 @@ var similarProducts = ViewBag.SimilarProducts as List<TechXpress_DepiGraduation.
                         <p class="text-muted"><strong>Price:</strong> <span class="text-success fs-4">$@Model.Price</span></p>
                         <p><strong>Description:</strong> @Model.Description</p>
                         <p><strong>Category:</strong> @(Model.Category?.Name ?? "N/A")</p>
-                        <p><strong>Colors:</strong>
+                        <p><strong>Colors:</strong></p>
                         <div class="color-container">
                             @foreach (var color in @Model.color)
                             {
                             <span class="color-badge" style="background-color: @color;" title="Color: @color" aria-label="Color swatch: @color"></span>
                             }
                         </div>
-                        </p>
                         <div class="btn-group mt-4 d-flex gap-2">
                             @if (!User.IsInRole(TechXpress_DepiGraduation.Data.StaticMembers.UserRoles.Admin))
                             {
-                            <button class="btn btn-custom" onclick="addToCart(@Model.Id)"><i class="fas fa-cart-plus me-2"></i>Add to Cart</button>
+                                <div id="cart-controls-@Model.Id" class="@(qty > 0 ? "d-none" : "") ">
+                                    <button onclick="addToCart(@Model.Id, event); event.stopPropagation();"
+                                            class="btn btn-sm btn-primary"
+                                            style="background-color:#7B61FF; border-color:#7B61FF;">
+                                        <i class="bi bi-cart text-white me-2"></i>Add to Cart
+                                    </button>
+                                </div>
+                                @* <button class="btn btn-custom" onclick="addToCart(@Model.Id,event); event.stopPropagation()"><i class="fas fa-cart-plus me-2"></i>Add to Cart</button> *@
+                                <div id="quantity-controls-@Model.Id"
+                                     class="d-flex flex-row align-items-center justify-content-center gap-2 mt-1 @(qty > 0 ? "" : "d-none")">
+                                    <button class="btn btn-outline-secondary btn-sm" style="padding:0"
+                                            onclick="updateCart(@Model.Id, -1); event.stopPropagation();">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <span id="qty-@Model.Id" class="fw-bold px-2">@qty</span>
+                                    <button class="btn btn-outline-secondary btn-sm" style="padding:0"
+                                            onclick="updateCart(@Model.Id, 1); event.stopPropagation();">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+
                             }
                             <a asp-action="Index" class="btn btn-outline-custom"><i class="fas fa-arrow-left me-2"></i>Back to List</a>
                             @if (User.IsInRole(TechXpress_DepiGraduation.Data.StaticMembers.UserRoles.Admin))
@@ -256,53 +278,99 @@ var similarProducts = ViewBag.SimilarProducts as List<TechXpress_DepiGraduation.
 </div>
 
 @section Scripts {
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // Update thumbnail active state on carousel slide
-    document.getElementById('productCarousel')?.addEventListener('slide.bs.carousel', function (event) {
-        document.querySelectorAll('.thumbnail').forEach((thumb, index) => {
-            thumb.classList.toggle('active', index === event.to);
-        });
+    document.addEventListener('DOMContentLoaded', function () {
+        const carousel = document.getElementById('productCarousel');
+        if (carousel) {
+            carousel.addEventListener('slide.bs.carousel', function (event) {
+                const thumbnails = document.querySelectorAll('.thumbnail');
+                thumbnails.forEach((thumb, index) => {
+                    thumb.classList.toggle('active', index === event.to);
+                });
+            });
+
+            // Initialize active thumbnail on page load
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            thumbnails.forEach((thumb, index) => {
+                thumb.classList.toggle('active', index === 0);
+            });
+        }
     });
 
-    // Add to Cart functionality
-    function addToCart(productId) {
-        fetch('/ShoppingCart/AddToCart', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ productId: productId, quantity: 1 })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'Product added to cart!',
-                        icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
+    function addToCart(productId, event) {
+        event.preventDefault();
+
+        fetch(`/Order/AddToCart/${productId}`)
+            .then(response => {
+                if (response.ok) {
+                    updateCartCount();
+                    showCartMessage();
+
+                    const cartBtn = document.getElementById(`cart-controls-${productId}`);
+                    const qtyControls = document.getElementById(`quantity-controls-${productId}`);
+                    const qtySpan = document.getElementById(`qty-${productId}`);
+
+                    if (cartBtn && qtyControls && qtySpan) {
+                        cartBtn.classList.add('d-none');
+                        qtyControls.classList.remove('d-none');
+                        qtySpan.textContent = 1;
+                    }
                 } else {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Failed to add product to cart: ' + (data.message || 'Unknown error'),
-                        icon: 'error'
-                    });
+                    alert("Something went wrong!");
                 }
             })
             .catch(error => {
-                console.error('Error adding to cart:', error);
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An error occurred while adding to cart.',
-                    icon: 'error'
-                });
+                console.error("Error:", error);
             });
     }
 
-    // SweetAlert confirmation for delete
+    function updateCart(productId, change) {
+        const qtySpan = document.getElementById(`qty-${productId}`);
+        const cartBtn = document.getElementById(`cart-controls-${productId}`);
+        const qtyControls = document.getElementById(`quantity-controls-${productId}`);
+
+        if (!qtySpan) return;
+
+        let currentQty = parseInt(qtySpan.textContent);
+
+        if (change === 1) {
+            fetch(`/Order/AddToCart/${productId}`)
+                .then(() => {
+                    qtySpan.textContent = currentQty + 1;
+                    updateCartCount();
+                });
+        } else if (change === -1 && currentQty > 1) {
+            fetch(`/Order/DecreaseFromCart/${productId}`)
+                .then(() => {
+                    qtySpan.textContent = currentQty - 1;
+                    updateCartCount();
+                });
+        } else if (change === -1 && currentQty === 1) {
+            fetch(`/Order/DecreaseFromCart/${productId}`)
+                .then(() => {
+                    if (cartBtn && qtyControls) {
+                        cartBtn.classList.remove('d-none');
+                        qtyControls.classList.add('d-none');
+                        qtySpan.textContent = 0;
+                        updateCartCount();
+                    }
+                });
+        }
+
+    }
+
+
+    function showCartMessage() {
+        const messageBox = document.getElementById('cart-message');
+        messageBox.classList.remove('d-none');
+
+        setTimeout(() => {
+            messageBox.classList.add('d-none');
+        }, 2000);
+    }
+
     function confirmDelete(productId) {
         Swal.fire({
             title: 'Are you sure?',
@@ -321,4 +389,3 @@ var similarProducts = ViewBag.SimilarProducts as List<TechXpress_DepiGraduation.
     }
 </script>
 }
-</body>

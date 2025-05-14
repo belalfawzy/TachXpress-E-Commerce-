@@ -121,8 +121,7 @@ namespace TechXpress_DepiGraduation.Controllers
             ViewBag.Categories = await _categoryService.GetAllAsync();
             return View(product);
         }
-
-        // GET: /Product/Details/5
+         
         public async Task<IActionResult> Details(int id)
         {
             var product = await _productService.GetItemByIdAsync(id);
@@ -131,10 +130,20 @@ namespace TechXpress_DepiGraduation.Controllers
                 TempData["ErrorMessage"] = "Product not found.";
                 return NotFound();
             }
+            var cartItems = _shoppingCart.GetShoppingCartItems();
+            var quantities = cartItems.ToDictionary(i => i.Product.Id, i => i.Quantity);
+            ViewBag.CartQuantities = quantities;
 
             ViewBag.SimilarProducts = _productService.getSimilar(4, product.CategoryId);
 
-            product.color = product.color[0].Split(',').ToList();
+            foreach (var c in product.color)
+            {
+                if (c.Length > 7)
+                {
+                    product.color.Concat(c.Split(','));
+                    product.color.Remove(c);
+                }
+            }
 
             product.Category = await _categoryService.GetItemByIdAsync(product.CategoryId);
             return View(product);
@@ -151,7 +160,14 @@ namespace TechXpress_DepiGraduation.Controllers
                 return NotFound();
             }
             ViewBag.Categories = await _categoryService.GetAllAsync();
-            product.color = product.color[0].Split(',').ToList();
+            foreach (var c in product.color)
+            {
+                if (c.Length > 7)
+                {
+                    product.color.Concat(c.Split(','));
+                    product.color.Remove(c);
+                }
+            }
             return View(product);
         }
 
@@ -170,12 +186,10 @@ namespace TechXpress_DepiGraduation.Controllers
                 return NotFound();
             }
 
-            // Remove Category and Image from ModelState validation
-            ModelState.Remove("Category");
+        ModelState.Remove("Category");
             ModelState.Remove("Image");
             ModelState.Remove("ImagesToDelete");
 
-            // Parse and validate colors
             List<string> colors = string.IsNullOrWhiteSpace(color)
                 ? new List<string>()
                 : color.Split(',', StringSplitOptions.RemoveEmptyEntries)
@@ -200,8 +214,7 @@ namespace TechXpress_DepiGraduation.Controllers
                 try
                 {
 
-                    // Handle images
-                    // Initialize with existing images that are still present
+                   
                     var updatedImages = ExistingImages?.Where(img => !string.IsNullOrWhiteSpace(img)).ToList() ??
                                         new List<string>();
                     Console.WriteLine($"Existing images from form: {string.Join(", ", updatedImages)}"); // Debug
@@ -253,7 +266,7 @@ namespace TechXpress_DepiGraduation.Controllers
                         }
 
                         product.Image = updatedImages;
-                        product.color = product.color[0].Split(',').ToList();
+                        product.color = colors;
                         await _productService.EditAsync(product);
                         TempData["SuccessMessage"] = "Product updated successfully!";
                         return RedirectToAction(nameof(Index));

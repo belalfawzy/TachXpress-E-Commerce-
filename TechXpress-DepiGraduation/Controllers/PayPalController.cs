@@ -33,7 +33,8 @@ namespace TechXpress_DepiGraduation.Controllers
                 }
 
                 // Create payment
-                var returnUrl = Url.Action("Checkout", "Order", null, Request.Scheme);
+                var returnUrl = Url.Action("ExecutePaypalPayment", "PayPal", null, Request.Scheme);
+                
                 var cancelUrl = Url.Action("Checkout", "Order", null, Request.Scheme);
                 
                 var approvalUrl = _payPalService.CreatePayment(amount, currency, returnUrl, cancelUrl);
@@ -57,13 +58,11 @@ namespace TechXpress_DepiGraduation.Controllers
         {
             try
             {
-                // Validate inputs
                 if (string.IsNullOrEmpty(payerId) || string.IsNullOrEmpty(paymentId))
                 {
                     return Json(new { success = false, message = "Invalid payment details" });
                 }
 
-                // Get user ID from Identity
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (string.IsNullOrEmpty(userId))
                 {

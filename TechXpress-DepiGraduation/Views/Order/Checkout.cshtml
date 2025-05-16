@@ -74,6 +74,8 @@ var grandTotal = total + shippingCost;
                         <input type="email" class="form-control" id="paypalEmail" name="paypalEmail"
                                placeholder="Enter your PayPal email" required>
                         <span class="text-danger field-validation-error" id="paypalEmailError"></span>
+                        <input type="hidden" id="payerId" name="payerId" />
+                        <input type="hidden" id="paymentId" name="paymentId" />
                     </div>
                 </div>
             </div>
@@ -352,36 +354,42 @@ var grandTotal = total + shippingCost;
             });
         });
 
-        // Handle PayPal callback
-        $(window).on('load', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const payerId = urlParams.get('PayerID');
-            const paymentId = urlParams.get('paymentId');
+        const urlParams = new URLSearchParams(window.location.search);
+        const payerId = urlParams.get('PayerID');
+        const paymentId = urlParams.get('paymentId');
 
-            if (payerId && paymentId) {
-                $.ajax({
-                    url: '@Url.Action("ExecutePaypalPayment", "PayPal")',
-                    type: 'POST',
-                    data: {
-                        payerId: payerId,
-                        paymentId: paymentId
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            showMessage('success', 'Payment Successful', 'Your order has been placed successfully!');
-                            setTimeout(() => {
-                                window.location.href = '@Url.Action("OrderCompleted", "Order")';
-                            }, 1500);
-                        } else {
-                            showMessage('error', 'Payment Failed', response.message);
-                        }
-                    },
-                    error: function(xhr) {
-                        showMessage('error', 'Error', xhr.responseJSON?.message || 'Failed to process PayPal payment');
+        if (payerId && paymentId) {
+            console.log("PayPal Redirect Detected");
+            console.log("PayerID:", payerId);
+            console.log("PaymentID:", paymentId);
+            $('#payerId').val(payerId);
+            $('#paymentId').val(paymentId);
+            executePaypalPayment(payerId, paymentId);
+        }
+
+        function executePaypalPayment(payerId, paymentId) {
+            $.ajax({
+                url: '@Url.Action("ExecutePaypalPayment", "PayPal")',
+                type: 'POST',
+                data: {
+                    payerId: payerId,
+                    paymentId: paymentId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        showMessage('success', 'Payment Successful', 'Your order has been placed successfully!');
+                        setTimeout(() => {
+                            window.location.href = '@Url.Action("OrderCompleted", "Order")';
+                        }, 1500);
+                    } else {
+                        showMessage('error', 'Payment Failed', response.message);
                     }
-                });
-            }
-        });
+                },
+                error: function(xhr) {
+                    showMessage('error', 'Error', xhr.responseJSON?.message || 'Failed to process PayPal payment');
+                }
+            });
+        }
 
         // Enable place order button
         $('input[name="selectedAddress"]').change(function() {

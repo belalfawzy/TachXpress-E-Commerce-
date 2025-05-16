@@ -55,14 +55,14 @@ namespace TechXpress_DepiGraduation.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(registerViewModel); 
+                return View(registerViewModel);
             }
 
             var existingUser = await _userManager.FindByEmailAsync(registerViewModel.Email);
             if (existingUser != null)
             {
                 ModelState.AddModelError("Email", "This email is already Exits.");
-                return View(registerViewModel); 
+                return View(registerViewModel);
             }
 
             var user = new AppUser()
@@ -77,7 +77,7 @@ namespace TechXpress_DepiGraduation.Controllers
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, UserRoles.User);
-                return View("RegisterationComplete"); 
+                return View("RegisterationComplete");
             }
 
             foreach (var error in result.Errors)
@@ -106,6 +106,56 @@ namespace TechXpress_DepiGraduation.Controllers
             ViewBag.UserRoles = userRoles;
 
             return View(users);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddAddress([FromForm] Addresses newAddress)
+        {
+            try
+            {
+                if (newAddress.ZipCode == null || newAddress.Country == null || newAddress.City == null || newAddress.Street == null || newAddress.AddressLine == null)
+                {
+                    var errors = ModelState
+                        .Where(x => x.Value.Errors.Count > 0)
+                        .ToDictionary(
+                            kvp => kvp.Key,
+                            kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                        );
+
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Validation failed",
+                        errors = errors
+                    });
+                }
+
+                var userId = _userManager.GetUserId(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new
+                    {
+                        success = false,
+                        message = "User not authenticated"
+                    });
+                }
+
+                newAddress.UserId = userId;
+
+                _context.Addresses.Add(newAddress);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { success = true, message = "Address saved successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "An error occurred while saving the address",
+                    error = ex.Message
+                });
+            }
         }
     }
 }

@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20250516063347_AddOrderShippingAndPaymentInfo.cs" />
+    <Compile Remove="Migrations\20250516063347_AddOrderShippingAndPaymentInfo.Designer.cs" />
+    <Compile Remove="Migrations\20250516070642_FixedCascadeIssue.cs" />
+    <Compile Remove="Migrations\20250516070642_FixedCascadeIssue.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CloudinaryDotNet" Version="1.27.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.15" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.15" />

@@ -1,5 +1,6 @@
 ﻿@model TechXpress_DepiGraduation.Data.ViewModel.OrderCheckoutViewModel
 @{
+    
     ViewData["Title"] = "Checkout";
     var cartItems = ViewBag.CartItems as List<TechXpress_DepiGraduation.Models.ShoppingCartItem>;
     var total = ViewBag.Total as decimal? ?? 0;
@@ -140,30 +141,41 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="addAddressForm">
+                <form id="addAddressForm" asp-action="AddAddress" asp-controller="Account" method="post">
+                    @Html.AntiForgeryToken()
                     <div class="mb-3">
-                        <label for="country" class="form-label">Country</label>
-                        <input type="text" class="form-control" id="country" placeholder="e.g., United States" required>
+                        <label asp-for="NewAddress.Country" class="form-label">Country</label>
+                        <input type="text" class="form-control" name="NewAddress.Country"
+                               id="NewAddress_Country" placeholder="e.g., Egypt" required>
+                        <span asp-validation-for="NewAddress.Country" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label for="city" class="form-label">City</label>
-                        <input type="text" class="form-control" id="city" placeholder="e.g., New York" required>
+                        <label asp-for="NewAddress.City" class="form-label">City</label>
+                        <input type="text" class="form-control" name="NewAddress.City"
+                               id="NewAddress_City" placeholder="e.g., Cairo" required>
+                        <span asp-validation-for="NewAddress.City" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label for="street" class="form-label">Street</label>
-                        <input type="text" class="form-control" id="street" placeholder="e.g., Main Street" required>
+                        <label asp-for="NewAddress.Street" class="form-label">Street</label>
+                        <input type="text" class="form-control" a name="NewAddress.Street"
+                               id="NewAddress_Street" placeholder="e.g., Main Street" required>
+                        <span asp-validation-for="NewAddress.Street" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label for="zipCode" class="form-label">Zip Code</label>
-                        <input type="text" class="form-control" id="zipCode" placeholder="e.g., 10001" required>
+                        <label asp-for="NewAddress.ZipCode" class="form-label">Zip Code</label>
+                        <input type="text" class="form-control" name="NewAddress.ZipCode"
+                               id="NewAddress_ZipCode" placeholder="e.g., 10001" required>
+                        <span asp-validation-for="NewAddress.ZipCode" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label for="addressLine" class="form-label">Address Line</label>
-                        <input type="text" class="form-control" id="addressLine" placeholder="e.g., Apt 4B, Building 123" required>
-                        <small class="text-muted">Add any additional address details here</small>
+                        <label asp-for="NewAddress.AddressLine" class="form-label">Address Line</label>
+                        <input type="text" class="form-control" name="NewAddress.AddressLine"
+                               id="NewAddress_AddressLine" placeholder="e.g., 123 Building - Main St. - Region" required>
+                        <span asp-validation-for="NewAddress.AddressLine" class="text-danger"></span>
                     </div>
                 </form>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" style="background-color: #7B61FF; border: none;" id="saveAddressBtn">Save Address</button>
@@ -173,75 +185,121 @@
 </div>
 
 @section Scripts {
+    <!-- Load required scripts in correct order -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
-        $(document).ready(function() {
-            // Save new address
-            $('#saveAddressBtn').click(function() {
-                // Validate form
-                if (!$('#addAddressForm')[0].checkValidity()) {
-                    $('#addAddressForm')[0].reportValidity();
-                    return;
+        // Helper function to display validation errors under form fields
+        function displayValidationErrors(errors) {
+            // Clear previous errors
+            $('.field-validation-error').text('');
+            $('.is-invalid').removeClass('is-invalid');
+
+            // Display new errors
+            $.each(errors, function(key, messages) {
+                var fieldName = key.replace('NewAddress.', '');
+                var $input = $(`[name="NewAddress.${fieldName}"]`);
+                var $errorSpan = $input.siblings('.field-validation-error');
+
+                if ($errorSpan.length) {
+                    $input.addClass('is-invalid');
+                    $errorSpan.text(messages.join(', '));
                 }
+            });
+        }
 
-                // Show loading state
-                $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
-                $(this).prop('disabled', true);
+        // Helper function to show error messages in a modal
+        function showError(title, detail) {
+            Swal.fire({
+                icon: 'error',
+                title: title,
+                html: detail ? `<small>${detail}</small>` : '',
+                showConfirmButton: true
+            });
+        }
 
-                // Create address object
-                const newAddress = {
-                    Country: $('#country').val(),
-                    City: $('#city').val(),
-                    Street: $('#street').val(),
-                    ZipCode: $('#zipCode').val(),
-                    AddressLine: $('#addressLine').val()
-                };
-
-                // AJAX call to save address
-                $.ajax({
-                    url: '@Url.Action("AddAddress", "Account")',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(newAddress),
-                    success: function(response) {
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Address Saved',
-                                text: 'Your address has been saved successfully!',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                $('#addAddressModal').modal('hide');
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire('Error', response.message, 'error');
-                            $('#saveAddressBtn').html('Save Address');
-                            $('#saveAddressBtn').prop('disabled', false);
-                        }
-                    },
-                    error: function() {
-                        Swal.fire('Error', 'An error occurred while saving the address', 'error');
-                        $('#saveAddressBtn').html('Save Address');
-                        $('#saveAddressBtn').prop('disabled', false);
-                    }
-                });
+        $(document).ready(function() {
+            // Clear validation errors when modal is shown
+            $('#addAddressModal').on('show.bs.modal', function() {
+                $('.field-validation-error').text('');
+                $('.is-invalid').removeClass('is-invalid');
             });
 
-            // Place order
+            // Save address button click handler
+                          $('#saveAddressBtn').click(function() {
+            var form = $('#addAddressForm');
+
+            if (!form.valid()) {
+                form.validate().focusInvalid();
+                return;
+            }
+
+            var $btn = $(this);
+            $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+            $btn.prop('disabled', true);
+
+            // إنشاء كائن البيانات بشكل يدوي
+            var formData = {
+                NewAddress: {
+                    Country: $('#NewAddress_Country').val(),
+                    City: $('#NewAddress_City').val(),
+                    Street: $('#NewAddress_Street').val(),
+                    ZipCode: $('#NewAddress_ZipCode').val(),
+                    AddressLine: $('#NewAddress_AddressLine').val()
+                },
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            };
+
+            $.ajax({
+                url: form.attr('action'),
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                data: form.serialize(), // استخدام serialize العادي
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Address Saved',
+                            text: 'Your address has been saved successfully!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            $('#addAddressModal').modal('hide');
+                            location.reload();
+                        });
+                    } else {
+                        displayValidationErrors(response.errors || {});
+                        showError(response.message || 'Failed to save address');
+                    }
+                },
+                error: function(xhr) {
+                    var errorMsg = xhr.responseJSON?.message || 'An error occurred while saving the address';
+                    showError('Error', errorMsg);
+                },
+                complete: function() {
+                    $btn.html('Save Address');
+                    $btn.prop('disabled', false);
+                }
+            });
+        });
+
+            // Place order button click handler
             $('#placeOrderBtn').click(function() {
                 const selectedAddressId = $('input[name="selectedAddress"]:checked').val();
                 const paymentMethod = $('input[name="paymentMethod"]:checked').val();
 
                 if (!selectedAddressId) {
-                    Swal.fire('Error', 'Please select a shipping address', 'error');
+                    showError('Error', 'Please select a shipping address');
                     return;
                 }
 
                 // Show loading state
-                $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...');
-                $(this).prop('disabled', true);
+                var $btn = $(this);
+                $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...');
+                $btn.prop('disabled', true);
 
                 $.ajax({
                     url: '@Url.Action("PlaceOrder", "Order")',
@@ -255,15 +313,16 @@
                         if (response.success) {
                             window.location.href = response.redirectUrl;
                         } else {
-                            Swal.fire('Error', response.message, 'error');
-                            $('#placeOrderBtn').html('Place Order');
-                            $('#placeOrderBtn').prop('disabled', false);
+                            showError('Error', response.message);
                         }
                     },
-                    error: function() {
-                        Swal.fire('Error', 'An error occurred while placing your order', 'error');
-                        $('#placeOrderBtn').html('Place Order');
-                        $('#placeOrderBtn').prop('disabled', false);
+                    error: function(xhr) {
+                        var errorMsg = xhr.responseJSON?.message || 'An error occurred while placing your order';
+                        showError('Error', errorMsg);
+                    },
+                    complete: function() {
+                        $btn.html('Place Order');
+                        $btn.prop('disabled', false);
                     }
                 });
             });

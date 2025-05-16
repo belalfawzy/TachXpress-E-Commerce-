@@ -107,29 +107,10 @@ namespace TechXpress_DepiGraduation.Controllers
 
 
 
-        [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CompleteOrder()
+        public async Task<IActionResult> OrderCompleted()
         {
-            var cartItems = _shoppingCart.GetShoppingCartItems();
-            if (!cartItems.Any())
-            {
-                TempData["Error"] = "Your cart is empty. Please add items before checking out.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            
-            
-            TempData["CartItems"] = System.Text.Json.JsonSerializer.Serialize(cartItems);
-            TempData["UserId"] = userId.ToString();
-
-            return RedirectToAction("SelectPayment", "Payment");
+            return View(nameof(OrderCompleted));
         }
 
 
@@ -168,7 +149,6 @@ namespace TechXpress_DepiGraduation.Controllers
                 .Where(a => a.UserId == userId)
                 .ToListAsync();
 
-            // Get cart items
             var cartItems = _shoppingCart.GetShoppingCartItems();
             var total = _shoppingCart.GetTotal();
 
@@ -181,8 +161,10 @@ namespace TechXpress_DepiGraduation.Controllers
             {
                 UserAddresses = addresses,
                 CartItems = cartItems,
-                Total = total
+                Total = total,
+                NewAddress = new Addresses()
             };
+
             ViewBag.CartItems = cartItems;
             ViewBag.Total = total;
 
@@ -191,51 +173,74 @@ namespace TechXpress_DepiGraduation.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> PlaceOrder(int addressId, PaymentMethod paymentMethod)
+        public async Task<IActionResult> PlaceOrder(int addressId, PaymentMethod paymentMethod, decimal shippingCost)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var cartItems = _shoppingCart.GetShoppingCartItems();
-
-            if (!cartItems.Any())
+            try
             {
-                return Json(new { success = false, message = "Your cart is empty." });
-            }
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var cartItems = _shoppingCart.GetShoppingCartItems();
 
-            // Get selected address
-            var address = await _context.Addresses
-                .FirstOrDefaultAsync(a => a.Id == addressId && a.UserId == userId);
+                if (!cartItems.Any())
+                {
+                    return Json(new { success = false, message = "Shopping cart is empty!"});
+                }
 
-            if (address == null)
-            {
-                return Json(new { success = false, message = "Invalid shipping address." });
-            }
+                var address = await _context.Addresses
+                    .FirstOrDefaultAsync(a => a.Id == addressId && a.UserId == userId);
 
-            // Store order
-            await _orderService.StoreOrdersAsync(cartItems, userId);
+                if (address == null)
+                {
+                    return Json(new { success = false, message = "Invalid Address" });
+                }
 
-            // Clear shopping cart
-            await _shoppingCart.Makecartempty();
+                await _orderService.StoreOrdersAsync(cartItems, userId, addressId, paymentMethod, shippingCost);
 
-            if (paymentMethod == PaymentMethod.CashOnDelivery)
-            {
-                // Implement PayPal integration here
-                // For now, just return a dummy URL
+                await _shoppingCart.Makecartempty();
+
                 return Json(new
                 {
                     success = true,
                     redirectUrl = Url.Action("OrderCompleted", "Order")
                 });
             }
-
-            return Json(new
+            catch (Exception ex)
             {
-                success = true,
-                redirectUrl = Url.Action("OrderCompleted", "Order")
-            });
+                return Json(new { success = false, message = "Error Occur" + ex.Message });
+            }
         }
-        public IActionResult OrderCompleted()
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> CancelOrder(int orderId)
         {
-            return View(); 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var order = await _orderService.GetOrderWithUserDetails(orderId);
+
+            if (order != null && order.UserId == userId && order.Status == OrderStatus.Pending)
+            {
+                await _orderService.UpdateOrderStatus(orderId, OrderStatus.Cancelled);
+                TempData["Success"] = "Order has been cancelled successfully.";
+            }
+            else
+            {
+                TempData["Error"] = "Unable to cancel order. It may have already been processed.";
+            }
+
+            return RedirectToAction(nameof(ListAllOrders));
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, OrderStatus status)
+        {
+            var order = await _orderService.GetOrderWithUserDetails(orderId);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            await _orderService.UpdateOrderStatus(orderId, status);
+            return RedirectToAction(nameof(ListAllOrders));
         }
     }
 }

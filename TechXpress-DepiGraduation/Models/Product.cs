@@ -14,7 +14,7 @@ namespace TechXpress_DepiGraduation.Models
         [StringLength(500, MinimumLength = 10, ErrorMessage = "Description Must be have at least 10 chars")]
         public string Description { get; set; }
         [Required(ErrorMessage = "this Field is required")]
-        [RegularExpression(@"^[0-9]+$", ErrorMessage = "Price must be a number")]
+        [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Price must be a valid number")]
         [Range(1, 1000000, ErrorMessage = "Price must be between 1 and 1,000,000")]
         [DataType(DataType.Currency)]
         [DisplayFormat(DataFormatString = "{0:C}")]

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using TechXpress_DepiGraduation.Data.Enums;
 using TechXpress_DepiGraduation.Models;
 
 namespace TechXpress_DepiGraduation.Data.Services
@@ -21,44 +22,54 @@ namespace TechXpress_DepiGraduation.Data.Services
             return orders;
         }
 
-        public async Task StoreOrdersAsync(List<ShoppingCartItem> items, string userId)
+        public async Task StoreOrdersAsync(List<ShoppingCartItem> items, string userId,
+                                 int addressId, PaymentMethod paymentMethod, decimal shippingCost)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 if (items == null || !items.Any())
-                    throw new ArgumentException("Shopping cart items cannot be null or empty.");
+                    throw new ArgumentException("The Cart is Empty");
+
+                // التحقق من وجود العنوان
+                var address = await _context.Addresses.FindAsync(addressId);
+                if (address == null || address.UserId != userId)
+                    throw new InvalidOperationException("Invalid Address");
 
                 foreach (var item in items)
                 {
                     if (!await _context.Products.AnyAsync(p => p.Id == item.ProductId))
-                        throw new InvalidOperationException($"Product with Id {item.ProductId} does not exist.");
+                        throw new InvalidOperationException($"product {item.ProductId} not found");
                 }
 
                 var order = new Order
                 {
                     UserId = userId,
-                    OrderItems = new List<OrderItem>() 
+                    AddressesId = addressId, 
+                    PaymentMethod = paymentMethod,
+                    ShippingCost = shippingCost, 
+                    CreatedAt = DateTime.Now, 
+                    Status = OrderStatus.Pending,
+                    OrderItems = new List<OrderItem>()
                 };
+
                 await _context.Orders.AddAsync(order);
-                
-                
-                await _context.SaveChangesAsync(); 
+                await _context.SaveChangesAsync();
+
                 foreach (var item in items)
                 {
                     var orderItem = new OrderItem
                     {
-                        productId = item.ProductId, 
+                        productId = item.ProductId,
                         OrderId = order.Id,
                         Amount = item.Quantity,
                         Price = item.Product.Price
                     };
-                    order.OrderItems.Add(orderItem); 
-                    await _context.OrderItems.AddAsync(orderItem); // Add to context
+                    order.OrderItems.Add(orderItem);
+                    await _context.OrderItems.AddAsync(orderItem);
                 }
 
                 await _context.SaveChangesAsync();
-                
                 await transaction.CommitAsync();
             }
             catch
@@ -75,33 +86,43 @@ namespace TechXpress_DepiGraduation.Data.Services
         }
 
         public async Task<Dictionary<int, List<OrderItem>>> GetorderItems(string userId)
-        {
-            var orderwithitems = await _context.Orders.Where(o => o.UserId
-                                                                  == userId).Join(_context.OrderItems, o => o.Id,
-                    ot => ot.OrderId, (o, ot) => new { OrderId = o.Id, OrderItem = ot })
-                .GroupBy(o => o.OrderId)
-                .Select(v => new KeyValuePair<int, List<OrderItem>>(v.Key, v.Select(x => x.OrderItem).ToList()))
-                .ToDictionaryAsync(d => d.Key, d => d.Value);
-            foreach (var item in orderwithitems)
-            {
-                foreach(var val in item.Value)
-                {
-                    val.Product = _context.Products.Where(p => p.Id == val.productId).FirstOrDefault();
+            => await _context.OrderItems
+                    .Include(oi => oi.Product)
+                    .Include(oi => oi.Order)
+                    .Include(oi => oi.Order.ShippingAddress)
+                    .ThenInclude(o => o.User)
+                    .Where(oi => oi.Order.UserId == userId)
+                    .GroupBy(oi => oi.OrderId)
+                    .ToDictionaryAsync(g => g.Key, g => g.ToList());
 
-                }
-            }
-            return orderwithitems;
-        }
+       
         public async Task<Dictionary<int, List<OrderItem>>> Getall()
+        => await _context.OrderItems
+                .Include(oi => oi.Product)
+                .Include(oi => oi.Order)
+                .ThenInclude(o => o.User)
+                .Include(i => i.Order.ShippingAddress)
+                .GroupBy(oi => oi.OrderId)
+                .ToDictionaryAsync(g => g.Key, g => g.ToList());
+       
+        public async Task UpdateOrderStatus(int orderId, OrderStatus status)
         {
-            var orderwithitems = await _context.Orders.Join(_context.OrderItems, o => o.Id,
-                    ot => ot.OrderId, (o, ot) => new { OrderId = o.Id, OrderItem = ot })
-                .GroupBy(o => o.OrderId)
-                .Select(v => new KeyValuePair<int, List<OrderItem>>(v.Key, v.Select(x => x.OrderItem).ToList()))
-                .ToDictionaryAsync(d => d.Key, d => d.Value);
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order != null)
+            {
+                order.Status = status;
+                await _context.SaveChangesAsync();
+            }
+        }
 
-           
-            return orderwithitems;
+        public async Task<Order> GetOrderWithUserDetails(int orderId)
+        {
+            return await _context.Orders
+                         .Include(o => o.User)
+                         .Include(o => o.ShippingAddress) // تضمين العنوان
+                         .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.Product)
+                         .FirstOrDefaultAsync(o => o.Id == orderId);
         }
 
     }

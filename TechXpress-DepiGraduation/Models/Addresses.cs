@@ -18,14 +18,12 @@ namespace TechXpress_DepiGraduation.Models
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Street Must be have at least 3 chars")]
         public string Street { get; set; }
         [Required(ErrorMessage = "this Field is required")]
-        [StringLength(5, MinimumLength = 5, ErrorMessage = "Postal Code Must be 5 digits")]
         [RegularExpression(@"^\d{5}$", ErrorMessage = "Postal Code must be 5 digits")]
-        [DataType(DataType.PostalCode)]
          public string ZipCode { get; set; }
         public AppUser User { get; set; }
         [Required(ErrorMessage = "this Field is required")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Please enter detailed information for ex. 16 El Galaa St.")]
         public string AddressLine { get;set; }
-
+        
     }
 }

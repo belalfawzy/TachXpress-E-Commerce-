@@ -18,28 +18,30 @@ namespace TechXpress_DepiGraduation.Controllers
         private readonly IOrderService _orderService;
         private readonly UserManager<AppUser> _userManager;
         private readonly AppDbContext _context;
-        public OrderController(IProductService productService, ShoppingCart shoppingCart,IOrderService orderService,AppDbContext context)
+
+        public OrderController(IProductService productService, ShoppingCart shoppingCart, IOrderService orderService, AppDbContext context, UserManager<AppUser> userManager)
         {
             _productService = productService;
             _shoppingCart = shoppingCart;
             _orderService = orderService;
             _context = context;
+            _userManager = userManager;
         }
+
         public IActionResult Index()
         {
             ViewBag.CartId = _shoppingCart.ShoppingCartId;
-
             var items = _shoppingCart.GetShoppingCartItems();
             ViewBag.Total = _shoppingCart.GetTotal();
             return View(items);
         }
+
         public async Task<IActionResult> AddToCart(int Id)
         {
             var item = await _productService.GetItemByIdAsync(Id);
             if (item != null)
             {
                 await _shoppingCart.AddItemToCart(item);
-
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
                 {
                     var count = _shoppingCart.GetShoppingCartItemsCount();
@@ -62,7 +64,6 @@ namespace TechXpress_DepiGraduation.Controllers
             if (item != null)
             {
                 await _shoppingCart.RemoveItemFromCart(item);
-
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
                 {
                     var count = _shoppingCart.GetShoppingCartItemsCount();
@@ -82,7 +83,6 @@ namespace TechXpress_DepiGraduation.Controllers
         public async Task<IActionResult> DeleteItemFromCart(int Id)
         {
             await _shoppingCart.DeleteItem(Id);
-
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
                 var count = _shoppingCart.GetShoppingCartItemsCount();
@@ -98,53 +98,46 @@ namespace TechXpress_DepiGraduation.Controllers
         }
 
         [HttpGet]
-        [HttpGet]
         public IActionResult GetCartCount()
         {
             var count = _shoppingCart.GetShoppingCartItemsCount();
             return Json(new { count = count });
         }
 
-
-
         [Authorize]
         public async Task<IActionResult> OrderCompleted()
         {
-            return View(nameof(OrderCompleted));
+            return View();
         }
-
 
         [Authorize]
         public async Task<IActionResult> ListAllOrders()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var role = User.IsInRole("Admin");
-            
+
             if (string.IsNullOrEmpty(userId))
             {
                 return RedirectToAction("Login", "Account");
             }
-            
-            if (!role)
-            { var  orders = await _orderService.GetorderItems(userId);
-                
-                return View(orders);
 
+            if (!role)
+            {
+                var orders = await _orderService.GetorderItems(userId);
+                return View(orders);
             }
             else
             {
-               var  orders = await _orderService.Getall();
-               return View(orders);
-
+                var orders = await _orderService.Getall();
+                return View(orders);
             }
         }
+
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Checkout()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // Get user addresses
             var addresses = await _context.Addresses
                 .Where(a => a.UserId == userId)
                 .ToListAsync();
@@ -173,7 +166,7 @@ namespace TechXpress_DepiGraduation.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> PlaceOrder(int addressId, PaymentMethod paymentMethod, decimal shippingCost)
+        public async Task<IActionResult> PlaceOrder(int addressId, PaymentMethod paymentMethod, decimal shippingCost, string paypalEmail = null)
         {
             try
             {
@@ -182,7 +175,7 @@ namespace TechXpress_DepiGraduation.Controllers
 
                 if (!cartItems.Any())
                 {
-                    return Json(new { success = false, message = "Shopping cart is empty!"});
+                    return Json(new { success = false, message = "Shopping cart is empty!" });
                 }
 
                 var address = await _context.Addresses
@@ -193,19 +186,36 @@ namespace TechXpress_DepiGraduation.Controllers
                     return Json(new { success = false, message = "Invalid Address" });
                 }
 
-                await _orderService.StoreOrdersAsync(cartItems, userId, addressId, paymentMethod, shippingCost);
+                // Calculate total amount
+                decimal totalAmount = cartItems.Sum(item => item.Product.Price * item.Quantity) + shippingCost;
 
+                // Store order
+                await _orderService.StoreOrdersAsync(cartItems, userId, addressId, paymentMethod, shippingCost, paypalEmail);
+
+                // Clear cart
                 await _shoppingCart.Makecartempty();
+
+                if (paymentMethod == PaymentMethod.PayPal)
+                {
+                    var redirectUrl = Url.Action("PaymentWithPaypal", "PayPal", new
+                    {
+                        amount = totalAmount,
+                        currency = "USD",
+                        paypalEmail = paypalEmail
+                    }, Request.Scheme);
+
+                    return Json(new { success = true, redirectUrl });
+                }
 
                 return Json(new
                 {
                     success = true,
-                    redirectUrl = Url.Action("OrderCompleted", "Order")
+                    redirectUrl = Url.Action("OrderCompleted", "Order", null, Request.Scheme)
                 });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Error Occur" + ex.Message });
+                return Json(new { success = false, message = "Error Occurred: " + ex.Message });
             }
         }
 
@@ -228,12 +238,12 @@ namespace TechXpress_DepiGraduation.Controllers
 
             return RedirectToAction(nameof(ListAllOrders));
         }
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> UpdateOrderStatus(int orderId, OrderStatus status)
         {
             var order = await _orderService.GetOrderWithUserDetails(orderId);
-
             if (order == null)
             {
                 return NotFound();

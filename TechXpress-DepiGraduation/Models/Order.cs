@@ -15,7 +15,7 @@ namespace TechXpress_DepiGraduation.Models
         public AppUser User { get; set; }
         public int AddressesId { get; set; }
         public Addresses ShippingAddress { get; set; }
-
+     //   public string? PaypalEmail { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
         [Column(TypeName = "decimal(18,2)")]
         public decimal ShippingCost { get; set; }

@@ -27,7 +27,6 @@ namespace TechXpress_DepiGraduation
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddScoped<ShoppingCart>(sp => ShoppingCart.GetShoppingCart(sp));
             builder.Services.AddDistributedMemoryCache();
-            
             builder.Services.AddScoped<PaypalService>();
             builder.Services.AddSession();
             builder.Services.AddHttpContextAccessor();

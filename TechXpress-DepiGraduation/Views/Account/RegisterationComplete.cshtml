@@ -1,12 +1,128 @@
-﻿<div class="row justify-content-center mt-5">
-    <div class="col-md-6">
-        <div class="alert alert-success text-center py-5 shadow rounded">
-            <h3 class="mb-4">
-                ✅ Register Completed Successfully!
-            </h3>
-            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary">
-                <i class="fas fa-redo-alt me-2"></i> Login Now!
-            </a>
+﻿<div class="success-wrapper">
+    <div class="success-card animate__animated animate__fadeInUp">
+        <div class="check-icon animate__animated animate__bounceIn">
+            <i class="fas fa-check-circle"></i>
         </div>
+
+        <h3 class="success-message animate__animated animate__fadeIn">
+            Registration Complete!
+            <div class="animated-line"></div>
+        </h3>
+
+        <a asp-controller="Account" asp-action="Login"
+           class="success-btn animate__animated animate__pulse animate__delay-1s">
+            <i class="fas fa-sign-in-alt"></i>
+            Launch Your Account
+        </a>
     </div>
 </div>
+
+<style>
+    .success-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8fafc;
+    }
+
+    .success-card {
+        background: white;
+        padding: 3rem;
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(123, 97, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+        max-width: 500px;
+        margin: 1rem;
+    }
+
+    .check-icon {
+        font-size: 5rem;
+        color: #7B61FF;
+        margin-bottom: 1.5rem;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .success-message {
+        color: #2d3748;
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .animated-line {
+        width: 60px;
+        height: 3px;
+        background: #7B61FF;
+        margin: 1rem auto;
+        border-radius: 2px;
+        animation: lineExpand 0.8s ease-out;
+    }
+
+    .success-btn {
+        background: #7B61FF;
+        color: white !important;
+        padding: 1rem 2rem;
+        border-radius: 30px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+        .success-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(123, 97, 255, 0.3);
+            background: #6a50e0;
+        }
+
+    /* Animations */
+    @@keyframes float {
+        0%, 100%
+
+    {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    }
+
+    @@keyframes lineExpand {
+        0%
+
+    {
+        width: 0;
+        opacity: 0;
+    }
+
+    100% {
+        width: 60px;
+        opacity: 1;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .success-card
+
+    {
+        padding: 2rem;
+    }
+
+    .success-message {
+        font-size: 1.5rem;
+    }
+
+    .check-icon {
+        font-size: 4rem;
+    }
+
+    }
+</style>

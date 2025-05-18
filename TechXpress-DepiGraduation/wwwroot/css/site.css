@@ -180,47 +180,230 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.hero {
-    background: linear-gradient(135deg, #7B61FF, #cba6f7);
-    color: white;
-    padding: 3rem 1rem;
-    border-radius: 12px;
-    margin-bottom: 2.5rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-    .hero h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
+/* Shipping Banner */
+.shipping-banner {
+    background: linear-gradient(135deg, #7B61FF 0%, #5a9bd5 100%);
+    color: white;
+    padding: 12px 0;
+    text-align: center;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(123, 97, 255, 0.2);
+    animation: pulseBanner 2s infinite;
+}
+
+@keyframes pulseBanner {
+    0% {
+        transform: scale(1);
     }
 
-    .hero p {
-        font-size: 1.25rem;
-        margin-bottom: 1.5rem;
+    50% {
+        transform: scale(1.02);
     }
 
-    .hero a.btn {
-        padding: 0.75rem 1.75rem;
-        font-size: 1rem;
-        font-weight: bold;
-        background-color: white;
-        color: #7B61FF;
-        border: 2px solid white;
-        border-radius: 50px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Hero Section */
+.hero {
+    position: relative;
+    height: 500px;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/images/homepage-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hero-content p {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary {
+    background-color: white;
+    padding: 0.75rem 2rem;
+    color:blue;
+    border-radius: 25px;
+    border: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(123, 97, 255, 0.3);
     }
 
-        .hero a.btn:hover {
-            background-color: transparent;
-            color: white;
-            border-color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-        }
+/* Categories Section */
+.categories-list {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+.category-btn {
+    background-color: #f8f9fa;
+    color: #7B61FF;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid #7B61FF;
+    display: flex;
+    align-items: center;
+}
+
+    .category-btn:hover {
+        background-color: #7B61FF;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+.view-all {
+    background: transparent;
+    border-style: dashed;
+}
+
+/* Featured Products */
+.section-title {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 2.5rem;
+}
+
+.badge {
+    position: absolute;
+    top: -15px;
+    right: -30px;
+    background: #FF4757;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    transform: rotate(15deg);
+}
+
+.product-carousel {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 1rem 0;
+}
+
+.product-card {
+    flex: 0 0 280px;
+    background: white;
+    border-radius: 15px;
+    padding: 1rem;
+    position: relative;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.product-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #FF4757;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.product-img {
+    height: 180px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+}
+
+.product-price {
+    color: #7B61FF;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+/* Carousel Arrows */
+.arrow-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    color: #7B61FF;
+}
+
+/* Responsive Design */
+@@media (max-width: 768px) {
+    .hero {
+        height: 400px;
+    }
+
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .shipping-banner {
+        font-size: 0.9rem;
+    }
+
+    .product-card {
+        flex: 0 0 240px;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero {
+        height: 300px;
+    }
+
+    .categories-list {
+        flex-direction: column;
+    }
+
+    .category-btn {
+        justify-content: center;
+    }
+}
 
 /* Rest of your existing CSS remains the same */
 .carousel-wrapper {
@@ -603,4 +786,125 @@ body {
         height: 120px;
     }
 }
+
+/*Login*/
+.login-page {
+    background: #f4f6f8;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 2rem 0;
+}
+
+    .login-page .login-box {
+        background: white;
+        padding: 3rem 2.5rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(123, 97, 255, 0.15);
+        width: 100%;
+        max-width: 440px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .login-page .login-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #7B61FF 0%, #cba6f7 100%);
+        }
+
+    .login-page .login-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #7B61FF 0%, #cba6f7 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .login-page .form-label {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .login-page .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1.25rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+        .login-page .form-control:focus {
+            border-color: #7B61FF;
+            box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.2);
+        }
+
+    .login-page .btn-login {
+        background: linear-gradient(135deg, #7B61FF 0%, #cba6f7 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        width: 100%;
+        padding: 1rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+        .login-page .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(123, 97, 255, 0.35);
+        }
+
+    /* Password-specific styles */
+    .login-page .input-group {
+        position: relative;
+    }
+
+    .login-page .password-toggle {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #cbd5e0;
+        transition: all 0.3s ease;
+    }
+
+    /* Error messages scoped to login page */
+    .login-page .text-danger {
+        color: #FF4757;
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+    }
+
+@media (max-width: 480px) {
+    .login-page .login-box {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+    }
+
+    .login-page .login-title {
+        font-size: 1.8rem;
+    }
+}
+.register-link {
+    display: block;
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #718096;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+    .register-link:hover {
+        color: #7B61FF;
+        text-decoration: none;
+    }
 

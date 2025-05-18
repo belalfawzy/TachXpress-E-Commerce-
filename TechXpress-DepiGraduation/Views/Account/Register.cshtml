@@ -6,85 +6,143 @@
     ViewData["Title"] = "Register";
 }
 
-<!-- Style for Register Page -->
 <style>
-    body {
-        background-color: #f4f6f8;
-        font-family: 'Segoe UI', sans-serif;
-    }
-
-    .register-wrapper {
+    .register-page {
+        background: #f4f6f8;
+        min-height: 100vh;
         display: flex;
-        justify-content: center;
         align-items: center;
-        min-height: 90vh;
+        padding: 2rem 0;
     }
 
-    .register-box {
-        background-color: #fff;
-        padding: 3rem 2.5rem;
-        border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-        width: 100%;
-        max-width: 500px;
-    }
-
-    .register-title {
-        font-size: 1.75rem;
-        font-weight: 600;
-        color: #a277a6;
-        text-align: center;
-        margin-bottom: 2rem;
-        letter-spacing: 1px;
-    }
-
-    .form-label {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #555;
-        margin-bottom: 5px;
-        text-transform: uppercase;
-    }
-
-    .form-control {
-        border-radius: 8px;
-        height: 45px;
-        font-size: 0.95rem;
-    }
-
-    .btn-register {
-        background-color: #a277a6;
-        color: white;
-        border-radius: 30px;
-        padding: 0.6rem 1.5rem;
-        width: 100%;
-        font-weight: 600;
-        font-size: 1rem;
-        border: none;
-        transition: 0.3s;
-    }
-
-        .btn-register:hover {
-            background-color: #8b5fa3;
+        .register-page .register-box {
+            background: white;
+            padding: 3rem 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(123, 97, 255, 0.15);
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
         }
 
-    .login-link {
-        display: block;
-        text-align: center;
-        margin-top: 1rem;
-        color: #6c757d;
-        font-size: 0.95rem;
+            .register-page .register-box::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: linear-gradient(90deg, #7B61FF 0%, #cba6f7 100%);
+            }
+
+        .register-page .register-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #7B61FF 0%, #cba6f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .register-page .form-label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .register-page .form-control {
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0.75rem 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+            .register-page .form-control:focus {
+                border-color: #7B61FF;
+                box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.2);
+            }
+
+        .register-page .btn-register {
+            background: linear-gradient(135deg, #7B61FF 0%, #cba6f7 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            width: 100%;
+            padding: 1rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(123, 97, 255, 0.25);
+        }
+
+            .register-page .btn-register:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(123, 97, 255, 0.35);
+            }
+
+        .register-page .login-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #718096;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+            .register-page .login-link:hover {
+                color: #7B61FF;
+                text-decoration: none;
+            }
+
+        .register-page .text-danger {
+            color: #FF4757;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+    @@media (max-width: 480px) {
+        .register-page .register-box {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+
+        .register-page .register-title {
+            font-size: 1.8rem;
+        }
     }
 
-        .login-link:hover {
-            text-decoration: underline;
-            color: #a277a6;
+    /* Password Toggle Styles */
+    .register-page .input-group {
+        position: relative;
+    }
+
+    .register-page .password-toggle {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #cbd5e0;
+        transition: all 0.3s ease;
+    }
+
+        .register-page .password-toggle:hover {
+            color: #7B61FF;
         }
 </style>
 
-<div class="container register-wrapper">
-    <div class="register-box">
-        <h2 class="register-title"><i class="fas fa-user-plus me-2"></i>Sign Up</h2>
+<div class="register-page">
+    <div class="register-box animate__animated animate__fadeInUp">
+        <h2 class="register-title">
+            <i class="fas fa-user-plus"></i>
+            Create Account
+        </h2>
 
         <form asp-action="Register" asp-controller="Account" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger text-center mb-3"></div>
@@ -107,27 +165,52 @@
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-4">
                 <label asp-for="Password" class="form-label">Password</label>
-                <input asp-for="Password" class="form-control" type="password" autocomplete="off" />
+                <div class="input-group">
+                    <input asp-for="Password" class="form-control" type="password" id="password" autocomplete="off" />
+                    <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                </div>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-4">
                 <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
-                <input asp-for="ConfirmPassword" class="form-control" type="password" autocomplete="off" />
+                <div class="input-group">
+                    <input asp-for="ConfirmPassword" class="form-control" type="password" id="confirmPassword" autocomplete="off" />
+                    <i class="fas fa-eye password-toggle" id="toggleConfirmPassword"></i>
+                </div>
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <input type="submit" value="Sign Up" class="btn btn-register" />
+                <button type="submit" class="btn btn-register">
+                    Sign Up <i class="fas fa-arrow-right ms-2"></i>
+                </button>
             </div>
 
-            <a asp-action="Login" class="login-link">Already have an account? Login</a>
+            <a asp-action="Login" class="login-link">
+                Already have an account? <strong>Sign In</strong>
+            </a>
         </form>
     </div>
 </div>
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        function setupPasswordToggle(fieldId, toggleId) {
+            const toggle = document.querySelector(toggleId);
+            const password = document.querySelector(fieldId);
+
+            toggle.addEventListener('click', function(e) {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+
+        setupPasswordToggle('#password', '#togglePassword');
+        setupPasswordToggle('#confirmPassword', '#toggleConfirmPassword');
+    </script>
 }

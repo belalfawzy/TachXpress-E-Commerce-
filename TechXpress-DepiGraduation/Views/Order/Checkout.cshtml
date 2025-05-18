@@ -129,7 +129,7 @@ var grandTotal = total + shippingCost;
                     }
                 </div>
                 <div class="card-footer bg-white" style="border-radius: 0 0 10px 10px;">
-                    <button  id="placeOrderBtn" class="btn btn-primary w-100" style="background-color: #7B61FF; border: none;"
+                    <button id="placeOrderBtn" class="btn btn-primary w-100" style="background-color: #7B61FF; border: none;"
                             @(Model.UserAddresses == null || !Model.UserAddresses.Any() ? "disabled" : "")>
                         Place Order
                     </button>
@@ -255,7 +255,7 @@ var grandTotal = total + shippingCost;
 
             $.ajax({
                 url: form.attr('action'),
-                type: 'POST',
+                type: 'POST Ascyn POST request to add a new address',
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 data: form.serialize(),
                 success: function(response) {
@@ -289,8 +289,7 @@ var grandTotal = total + shippingCost;
                 return;
             }
 
-
-            @*  if (paymentMethod === 'PayPal' && (!paypalEmail || !paypalEmail.includes('@'))) {
+         @*   if (paymentMethod === 'PayPal' && (!paypalEmail || !paypalEmail.includes("@"))) {
                 $('#paypalEmailError').text('Please enter a valid PayPal email');
                 return;
             }
@@ -299,6 +298,7 @@ var grandTotal = total + shippingCost;
             var $btn = $(this);
             $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...');
             $btn.prop('disabled', true);
+
             $.ajax({
                 url: '@Url.Action("PlaceOrder", "Order")',
                 type: 'POST',
@@ -321,6 +321,8 @@ var grandTotal = total + shippingCost;
                                 },
                                 success: function(paypalResponse) {
                                     if (paypalResponse.success) {
+                                        // Store paymentId for later use
+                                        $('#paymentId').val(paypalResponse.paymentId);
                                         window.location.href = paypalResponse.approvalUrl;
                                     } else {
                                         showMessage('error', 'PayPal Error', paypalResponse.message);
@@ -354,14 +356,13 @@ var grandTotal = total + shippingCost;
             });
         });
 
+        // Handle PayPal redirect
         const urlParams = new URLSearchParams(window.location.search);
         const payerId = urlParams.get('PayerID');
         const paymentId = urlParams.get('paymentId');
 
         if (payerId && paymentId) {
-            console.log("PayPal Redirect Detected");
-            console.log("PayerID:", payerId);
-            console.log("PaymentID:", paymentId);
+            console.log("PayPal Redirect Detected", { payerId, paymentId });
             $('#payerId').val(payerId);
             $('#paymentId').val(paymentId);
             executePaypalPayment(payerId, paymentId);
@@ -370,7 +371,7 @@ var grandTotal = total + shippingCost;
         function executePaypalPayment(payerId, paymentId) {
             $.ajax({
                 url: '@Url.Action("ExecutePaypalPayment", "PayPal")',
-                type: 'POST',
+                type: 'POST', // Changed to POST for security
                 data: {
                     payerId: payerId,
                     paymentId: paymentId

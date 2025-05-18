@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using TechXpress_DepiGraduation.Data.Services;
 
 namespace TechXpress_DepiGraduation.Controllers
@@ -15,11 +16,11 @@ namespace TechXpress_DepiGraduation.Controllers
         }
 
         [HttpPost]
-        public IActionResult PaymentWithPaypal(decimal amount, string currency = "USD", string paypalEmail = "")
+        public async Task<IActionResult> PaymentWithPaypal(decimal amount, string currency = "USD", string paypalEmail = "")
         {
             try
             {
-                // Validate PayPal email
+                // Validate PayPal email (optional, as not used in CreatePayment)
                 if (string.IsNullOrWhiteSpace(paypalEmail) || !paypalEmail.Contains("@"))
                 {
                     return Json(new { success = false, message = "Invalid PayPal email address" });
@@ -34,13 +35,12 @@ namespace TechXpress_DepiGraduation.Controllers
 
                 // Create payment
                 var returnUrl = Url.Action("ExecutePaypalPayment", "PayPal", null, Request.Scheme);
-                
                 var cancelUrl = Url.Action("Checkout", "Order", null, Request.Scheme);
-                
-                var approvalUrl = _payPalService.CreatePayment(amount, currency, returnUrl, cancelUrl);
+                var approvalUrl = await _payPalService.CreatePayment(amount, currency, returnUrl, cancelUrl);
 
-                if (approvalUrl != null)
+                if (!string.IsNullOrEmpty(approvalUrl))
                 {
+                    Console.WriteLine($"PaymentWithPaypal: Approval URL={approvalUrl}");
                     return Json(new { success = true, approvalUrl });
                 }
 
@@ -48,41 +48,48 @@ namespace TechXpress_DepiGraduation.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"PaymentWithPaypal Error: {ex.Message}");
+                Console.WriteLine($"PaymentWithPaypal Error: {ex.Message}, Inner: {ex.InnerException?.Message}");
                 return Json(new { success = false, message = "Error: " + ex.Message });
             }
         }
 
-        [HttpPost]
-        public IActionResult ExecutePaypalPayment(string payerId, string paymentId)
+        [HttpGet]
+        public async Task<IActionResult> ExecutePaypalPayment(string PayerID, string PaymentId)
         {
             try
             {
-                if (string.IsNullOrEmpty(payerId) || string.IsNullOrEmpty(paymentId))
+                 Console.WriteLine($"ExecutePaypalPayment: PaymentId={PaymentId}, PayerID={PayerID}");
+                if (string.IsNullOrEmpty(PayerID) || string.IsNullOrEmpty(PaymentId))
                 {
-                    return Json(new { success = false, message = "Invalid payment details" });
+                    TempData["Error"] = "Invalid payment details";
+                    return RedirectToAction("Checkout", "Order");
                 }
 
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                Console.WriteLine($"UserId: {userId}");
                 if (string.IsNullOrEmpty(userId))
                 {
-                    return Json(new { success = false, message = "User not authenticated" });
+                    TempData["Error"] = "User not authenticated";
+                    return RedirectToAction("Checkout", "Order");
                 }
 
                 // Execute payment
-                var isApproved = _payPalService.ExecutePayment(payerId, paymentId);
+                var isApproved = await _payPalService.ExecutePayment(PayerID, PaymentId);
+                Console.WriteLine($"Payment Approved: {isApproved}");
 
                 if (isApproved)
                 {
-                    return Json(new { success = true, message = "Payment completed successfully" });
+                    return RedirectToAction("OrderCompleted", "Order");
                 }
 
-                return Json(new { success = false, message = "Payment was not approved" });
+                TempData["Error"] = "Payment was not approved";
+                return RedirectToAction("Checkout", "Order");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ExecutePaypalPayment Error: {ex.Message}");
-                return Json(new { success = false, message = "Error: " + ex.Message });
+                Console.WriteLine($"ExecutePaypalPayment Error: {ex.Message}, Inner: {ex.InnerException?.Message}");
+                TempData["Error"] = $"Payment error: {ex.Message}";
+                return RedirectToAction("Checkout", "Order");
             }
         }
     }

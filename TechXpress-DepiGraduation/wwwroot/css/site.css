@@ -623,7 +623,7 @@ body {
     }
 
     .category-card .card-img-top {
-        height: 200px;
+        height: 180px;
         display: flex;
         align-items: center;
         justify-content: center;

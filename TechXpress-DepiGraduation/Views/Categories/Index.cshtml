@@ -5,12 +5,7 @@
     ViewData["Title"] = "Categories";
 }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success text-center" role="alert">
-        @TempData["SuccessMessage"]
-    </div>
-}
+
 
     @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
     {
@@ -70,6 +65,95 @@
     </div>
 
 
+@* @section Scripts { *@
+@*     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> *@
+@*     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
+@*     <script> *@
+@*         const successMsg = '@TempData["SuccessMessage"]'; *@
+@*         if (successMsg) { *@
+@*             Swal.fire({ *@
+@*                 icon: 'success', *@
+@*                 title: 'Success!', *@
+@*                 text: successMsg, *@
+@*                 timer: 2000, // Alert disappears after 2 seconds *@
+@*                 timerProgressBar: true, // Shows a progress bar for the timer *@
+@*                 showConfirmButton: false, // No confirm button needed *@
+@*                 background: '#f3e9ff', // Light purple background *@
+@*                 iconColor: '#6B4E9E', // Purple icon color to match UI *@
+@*                 customClass: { *@
+@*                     title: 'text-dark', *@
+@*                     content: 'text-muted' *@
+@*                 } *@
+@*             }); *@
+@*         } *@
+
+@*         function confirmDelete(event, id) { *@
+@*             event.preventDefault(); // Explicitly use the event parameter *@
+
+@*             Swal.fire({ *@
+@*                 title: "Are you sure?", *@
+@*                 text: "You won't be able to revert this!", *@
+@*                 icon: "warning", *@
+@*                 showCancelButton: true, *@
+@*                 confirmButtonColor: "#6B4E9E", // Purple confirm button *@
+@*                 cancelButtonColor: "#e74c3c", *@
+@*                 confirmButtonText: "Yes, delete it!", *@
+@*                 background: '#f3e9ff', // Light purple background *@
+@*                 iconColor: '#e74c3c', // Red warning icon *@
+@*                 customClass: { *@
+@*                     title: 'text-dark', *@
+@*                     content: 'text-muted' *@
+@*                 } *@
+@*             }).then((result) => { *@
+@*                 if (result.isConfirmed) { *@
+@*                     const form = event.target.closest('form'); *@
+@*                     $.ajax({ *@
+@*                         url: form.action, *@
+@*                         type: 'POST', *@
+@*                         data: $(form).serialize(), *@
+@*                         success: function (response) { *@
+@*                             $(`#category-${id}`).fadeOut(300, function () { *@
+@*                                 $(this).remove(); *@
+@*                                 Swal.fire({ *@
+@*                                     title: "Deleted!", *@
+@*                                     text: "Your category has been deleted.", *@
+@*                                     icon: "success", *@
+@*                                     timer: 2000, // Disappears after 2 seconds *@
+@*                                     timerProgressBar: true, *@
+@*                                     showConfirmButton: false, *@
+@*                                     background: '#f3e9ff', // Light purple background *@
+@*                                     iconColor: '#6B4E9E', // Purple icon *@
+@*                                     customClass: { *@
+@*                                         title: 'text-dark', *@
+@*                                         content: 'text-muted' *@
+@*                                     } *@
+@*                                 }); *@
+@*                             }); *@
+@*                         }, *@
+@*                         error: function (xhr, status, error) { *@
+@*                             Swal.fire({ *@
+@*                                 title: "Error!", *@
+@*                                 text: "An error occurred while deleting the category.", *@
+@*                                 icon: "error", *@
+@*                                 timer: 2000, // Disappears after 2 seconds *@
+@*                                 timerProgressBar: true, *@
+@*                                 showConfirmButton: false, *@
+@*                                 background: '#f3e9ff', // Light purple background *@
+@*                                 iconColor: '#e74c3c', // Red error icon *@
+@*                                 customClass: { *@
+@*                                     title: 'text-dark', *@
+@*                                     content: 'text-muted' *@
+@*                                 } *@
+@*                             }); *@
+@*                         } *@
+@*                     }); *@
+@*                 } *@
+@*             }); *@
+@*             return false; *@
+@*         } *@
+@*     </script> *@
+@* } *@
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -79,23 +163,39 @@
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
-                text: successMsg
+                text: successMsg,
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                background: '#f3e9ff',
+                iconColor: '#6B4E9E',
+                customClass: {
+                    title: 'text-dark',
+                    content: 'text-muted'
+                }
             });
         }
+
         function confirmDelete(event, id) {
-            event.preventDefault(); // Explicitly use the event parameter
+            event.preventDefault();
 
             Swal.fire({
                 title: "Are you sure?",
                 text: "You won't be able to revert this!",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: "#7B61FF",
+                confirmButtonColor: "#6B4E9E",
                 cancelButtonColor: "#e74c3c",
-                confirmButtonText: "Yes, delete it!"
+                confirmButtonText: "Yes, delete it!",
+                background: '#f3e9ff',
+                iconColor: '#e74c3c',
+                customClass: {
+                    title: 'text-dark',
+                    content: 'text-muted'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    const form = event.target.closest('form'); // Use event.target to find the form
+                    const form = event.target.closest('form');
                     $.ajax({
                         url: form.action,
                         type: 'POST',
@@ -106,7 +206,16 @@
                                 Swal.fire({
                                     title: "Deleted!",
                                     text: "Your category has been deleted.",
-                                    icon: "success"
+                                    icon: "success",
+                                    timer: 2000,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false,
+                                    background: '#f3e9ff',
+                                    iconColor: '#6B4E9E',
+                                    customClass: {
+                                        title: 'text-dark',
+                                        content: 'text-muted'
+                                    }
                                 });
                             });
                         },
@@ -114,7 +223,16 @@
                             Swal.fire({
                                 title: "Error!",
                                 text: "An error occurred while deleting the category.",
-                                icon: "error"
+                                icon: "error",
+                                timer: 2000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                background: '#f3e9ff',
+                                iconColor: '#e74c3c',
+                                customClass: {
+                                    title: 'text-dark',
+                                    content: 'text-muted'
+                                }
                             });
                         }
                     });
@@ -122,6 +240,5 @@
             });
             return false;
         }
-
     </script>
 }

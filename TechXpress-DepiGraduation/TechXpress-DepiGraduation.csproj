@@ -33,4 +33,10 @@
     <Folder Include="wwwroot\images\categories\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\PayPal\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\PayPal\PaymentCancel.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\PayPal\PaymentSuccess.cshtml" />
+  </ItemGroup>
+
 </Project>

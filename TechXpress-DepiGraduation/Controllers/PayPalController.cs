@@ -20,7 +20,7 @@ namespace TechXpress_DepiGraduation.Controllers
         {
             try
             {
-                // Validate PayPal email (optional, as not used in CreatePayment)
+                // Validate PayPal email (optional for demo)
                 if (string.IsNullOrWhiteSpace(paypalEmail) || !paypalEmail.Contains("@"))
                 {
                     return Json(new { success = false, message = "Invalid PayPal email address" });
@@ -36,12 +36,12 @@ namespace TechXpress_DepiGraduation.Controllers
                 // Create payment
                 var returnUrl = Url.Action("ExecutePaypalPayment", "PayPal", null, Request.Scheme);
                 var cancelUrl = Url.Action("Checkout", "Order", null, Request.Scheme);
-                var approvalUrl = await _payPalService.CreatePayment(amount, currency, returnUrl, cancelUrl);
+                var (approvalUrl, paymentId) = await _payPalService.CreatePayment(amount, currency, returnUrl, cancelUrl);
 
                 if (!string.IsNullOrEmpty(approvalUrl))
                 {
-                    Console.WriteLine($"PaymentWithPaypal: Approval URL={approvalUrl}");
-                    return Json(new { success = true, approvalUrl });
+                    Console.WriteLine($"PaymentWithPaypal: ApprovalUrl={approvalUrl}, PaymentId={paymentId}");
+                    return Json(new { success = true, approvalUrl, paymentId });
                 }
 
                 return Json(new { success = false, message = "Failed to create PayPal payment" });
@@ -54,35 +54,41 @@ namespace TechXpress_DepiGraduation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ExecutePaypalPayment(string PayerID, string PaymentId)
+        public async Task<IActionResult> ExecutePaypalPayment(string PayerID, string token)
         {
             try
             {
-                 Console.WriteLine($"ExecutePaypalPayment: PaymentId={PaymentId}, PayerID={PayerID}");
-                if (string.IsNullOrEmpty(PayerID) || string.IsNullOrEmpty(PaymentId))
+                // Use token as paymentId (order ID)
+                string paymentId = token;
+                Console.WriteLine($"ExecutePaypalPayment: paymentId={paymentId}, PayerID={PayerID}, FullUrl={Request.Scheme}://{Request.Host}{Request.Path}{Request.QueryString}");
+
+                if (string.IsNullOrEmpty(PayerID) || string.IsNullOrEmpty(paymentId))
                 {
                     TempData["Error"] = "Invalid payment details";
+                    Console.WriteLine($"ExecutePaypalPayment Error: Missing PayerID={PayerID} or paymentId={paymentId}");
                     return RedirectToAction("Checkout", "Order");
                 }
 
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                Console.WriteLine($"UserId: {userId}");
                 if (string.IsNullOrEmpty(userId))
                 {
                     TempData["Error"] = "User not authenticated";
+                    Console.WriteLine("ExecutePaypalPayment Error: User not authenticated");
                     return RedirectToAction("Checkout", "Order");
                 }
 
                 // Execute payment
-                var isApproved = await _payPalService.ExecutePayment(PayerID, PaymentId);
+                var isApproved = await _payPalService.ExecutePayment(PayerID, paymentId);
                 Console.WriteLine($"Payment Approved: {isApproved}");
 
                 if (isApproved)
                 {
+                    TempData["Success"] = "Payment completed successfully!";
                     return RedirectToAction("OrderCompleted", "Order");
                 }
 
                 TempData["Error"] = "Payment was not approved";
+                Console.WriteLine("ExecutePaypalPayment Error: Payment was not approved");
                 return RedirectToAction("Checkout", "Order");
             }
             catch (Exception ex)

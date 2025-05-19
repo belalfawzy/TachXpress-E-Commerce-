@@ -289,7 +289,7 @@ var grandTotal = total + shippingCost;
                 return;
             }
 
-         @*   if (paymentMethod === 'PayPal' && (!paypalEmail || !paypalEmail.includes("@"))) {
+            @*   if (paymentMethod === 'PayPal' && (!paypalEmail || !paypalEmail.includes("@"))) {
                 $('#paypalEmailError').text('Please enter a valid PayPal email');
                 return;
             }
@@ -312,7 +312,7 @@ var grandTotal = total + shippingCost;
                     if (response.success) {
                         if (paymentMethod === 'PayPal') {
                             $.ajax({
-                                url: response.redirectUrl,
+                                url: '@Url.Action("PaymentWithPaypal", "PayPal")',
                                 type: 'POST',
                                 data: {
                                     amount: @grandTotal,
@@ -321,8 +321,8 @@ var grandTotal = total + shippingCost;
                                 },
                                 success: function(paypalResponse) {
                                     if (paypalResponse.success) {
-                                        // Store paymentId for later use
-                                        $('#paymentId').val(paypalResponse.paymentId);
+                                        // Store paymentId in a hidden field or session if needed
+                                        $('#paymentId').val(paypalResponse.paymentId || '');
                                         window.location.href = paypalResponse.approvalUrl;
                                     } else {
                                         showMessage('error', 'PayPal Error', paypalResponse.message);
@@ -352,9 +352,8 @@ var grandTotal = total + shippingCost;
                     showMessage('error', 'Error', xhr.responseJSON?.message || 'An error occurred while placing your order');
                     $btn.html('Place Order');
                     $btn.prop('disabled', false);
-                }
-            });
-        });
+                },
+});        });
 
         // Handle PayPal redirect
         const urlParams = new URLSearchParams(window.location.search);
@@ -365,32 +364,8 @@ var grandTotal = total + shippingCost;
             console.log("PayPal Redirect Detected", { payerId, paymentId });
             $('#payerId').val(payerId);
             $('#paymentId').val(paymentId);
-            executePaypalPayment(payerId, paymentId);
         }
 
-        function executePaypalPayment(payerId, paymentId) {
-            $.ajax({
-                url: '@Url.Action("ExecutePaypalPayment", "PayPal")',
-                type: 'POST', // Changed to POST for security
-                data: {
-                    payerId: payerId,
-                    paymentId: paymentId
-                },
-                success: function(response) {
-                    if (response.success) {
-                        showMessage('success', 'Payment Successful', 'Your order has been placed successfully!');
-                        setTimeout(() => {
-                            window.location.href = '@Url.Action("OrderCompleted", "Order")';
-                        }, 1500);
-                    } else {
-                        showMessage('error', 'Payment Failed', response.message);
-                    }
-                },
-                error: function(xhr) {
-                    showMessage('error', 'Error', xhr.responseJSON?.message || 'Failed to process PayPal payment');
-                }
-            });
-        }
 
         // Enable place order button
         $('input[name="selectedAddress"]').change(function() {

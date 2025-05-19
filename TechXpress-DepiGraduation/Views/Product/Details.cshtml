@@ -127,14 +127,56 @@ var qty = hasInCart ? quantities[@Model.Id] : 0;
             background: #6A52D9;
             transform: translateY(-2px);
         }
+        .thumbnail-container {
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch devices */
+            scrollbar-width: thin; /* For Firefox */
+            scrollbar-color: #888 #f1f1f1; /* For Firefox */
+        }
+
+        /* Webkit-based browsers (Chrome, Safari) */
+        .thumbnail-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .thumbnail-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .thumbnail-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .thumbnail-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            margin-right: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border 0.2s;
+        }
+
+        .thumbnail.active {
+            border: 2px solid #007bff;
+        }
+
+        .thumbnail:last-child {
+            margin-right: 0;
+        }
         
     </style>
 </div>
 
 <div class="container-fluid py-5">
-    <div class="hero fade-in">
-        <h1><i class="fas fa-box-open me-2"></i>@(Model?.Name ?? "Product Details")</h1>
-    </div>
+ 
 
     <!-- Error Message -->
     @if (TempData["ErrorMessage"] != null)
@@ -168,7 +210,6 @@ var qty = hasInCart ? quantities[@Model.Id] : 0;
                                 </div>
                                 }
                             </div>
-                            <!-- Carousel Controls -->
                             @if (Model.Image.Count > 1)
                             {
                             <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev" aria-label="Previous image">
@@ -183,7 +224,7 @@ var qty = hasInCart ? quantities[@Model.Id] : 0;
                             <!-- Thumbnails -->
                             @if (Model.Image.Count > 1)
                             {
-                            <div class="d-flex justify-content-center mt-3" role="tablist">
+                            <div class="thumbnail-container d-flex mt-3" role="tablist">
                                 @for (int i = 0; i < Model.Image.Count; i++)
                                 {
                                 <img src="@Model.Image[i]" class="thumbnail @(i == 0 ? "active" : "")" data-bs-target="#productCarousel" data-bs-slide-to="@i" alt="Thumbnail @(i + 1)" role="tab" aria-label="Thumbnail @(i + 1)" loading="lazy" />
@@ -198,12 +239,12 @@ var qty = hasInCart ? quantities[@Model.Id] : 0;
                         }
                     </div>
 
-                    <div class="col-md-6 product-details ps-md-4 pt-3 pt-md-0">
+                    <div class="col-md-6 product-details ps-md-4 pt-3 pt-md-0 align-content-center justify-content-center">
                         <h3 class="mb-3">@Model.Name</h3>
-                        <p class="text-muted"><strong>Price:</strong> <span class="text-success fs-4">$@Model.Price</span></p>
-                        <p><strong>Description:</strong> @Model.Description</p>
+                        <p class="text-muted"> <span class="text-success  display-5">$@Model.Price</span></p>
+                        <p> @Model.Description</p>
                         <p><strong>Category:</strong> @(Model.Category?.Name ?? "N/A")</p>
-                        <p><strong>Colors:</strong></p>
+                        <p ><strong>Colors:</strong></p>
                         <div class="color-container">
                             @foreach (var color in @Model.color)
                             {
@@ -217,20 +258,19 @@ var qty = hasInCart ? quantities[@Model.Id] : 0;
                                     <button onclick="addToCart(@Model.Id, event); event.stopPropagation();"
                                             class="btn btn-sm btn-primary"
                                             style="background-color:#7B61FF; border-color:#7B61FF;">
-                                        <i class="bi bi-cart text-white me-2"></i>Add to Cart
+                                        <i class="bi bi-cart text-white me-2 py-2"></i>Add to Cart
                                     </button>
                                 </div>
-                                @* <button class="btn btn-custom" onclick="addToCart(@Model.Id,event); event.stopPropagation()"><i class="fas fa-cart-plus me-2"></i>Add to Cart</button> *@
                                 <div id="quantity-controls-@Model.Id"
-                                     class="d-flex flex-row align-items-center justify-content-center gap-2 mt-1 @(qty > 0 ? "" : "d-none")">
-                                    <button class="btn btn-outline-secondary btn-sm" style="padding:0"
+                                     class=" m-3 d-flex flex-row align-items-center justify-content-center gap-2 mt-1 @(qty > 0 ? "" : "d-none")">
+                                    <button class="btn btn-outline-secondary display-6 " style="padding:0"
                                             onclick="updateCart(@Model.Id, -1); event.stopPropagation();">
-                                        <i class="bi bi-dash"></i>
+                                        <i class="bi bi-dash display-6"></i>
                                     </button>
-                                    <span id="qty-@Model.Id" class="fw-bold px-2">@qty</span>
-                                    <button class="btn btn-outline-secondary btn-sm" style="padding:0"
+                                    <span id="qty-@Model.Id" class="fw-bold display-6 px-2">@qty</span>
+                                    <button class="display-2 btn btn-outline-secondary btn-sm" style="padding:0"
                                             onclick="updateCart(@Model.Id, 1); event.stopPropagation();">
-                                        <i class="bi bi-plus"></i>
+                                        <i class="bi bi-plus display-6"></i>
                                     </button>
                                 </div>
 
@@ -301,22 +341,23 @@ var qty = hasInCart ? quantities[@Model.Id] : 0;
 
     function addToCart(productId, event) {
         event.preventDefault();
+        
 
         fetch(`/Order/AddToCart/${productId}`)
             .then(response => {
                 if (response.ok) {
                     updateCartCount();
-                    showCartMessage();
 
                     const cartBtn = document.getElementById(`cart-controls-${productId}`);
                     const qtyControls = document.getElementById(`quantity-controls-${productId}`);
                     const qtySpan = document.getElementById(`qty-${productId}`);
 
-                    if (cartBtn && qtyControls && qtySpan) {
-                        cartBtn.classList.add('d-none');
+                        cartBtn.classList.add("d-none");
                         qtyControls.classList.remove('d-none');
                         qtySpan.textContent = 1;
-                    }
+                    showCartMessage();
+
+
                 } else {
                     alert("Something went wrong!");
                 }

@@ -1,7 +1,75 @@
 @{
-    ViewData["Title"] = "Order Completed";
+ViewData["Title"] = "Order Completed";
 }
 
-<h2>Order Completed</h2>
-<p>Thank you for your order! You will receive a confirmation soon.</p>
-<a asp-action="Index" asp-controller="Order" class="btn btn-primary">Back to Shopping</a>
+
+<style>
+    .order-completed-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+
+    .order-completed-card {
+        max-width: 500px;
+        width: 100%;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    .success-icon {
+        font-size: 4rem;
+        color: #28a745;
+        margin-bottom: 20px;
+    }
+
+    h2 {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 15px;
+    }
+
+    p {
+        font-size: 1.1rem;
+        color: #6c757d;
+        margin-bottom: 30px;
+    }
+
+    .btn-primary {
+        padding: 10px 20px;
+        font-size: 1rem;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    p {
+        font-size: 1rem;
+    }
+    
+</style>
+
+<div class="order-completed-container">
+    <div class="order-completed-card">
+        <i class="bi bi-check-circle-fill success-icon"></i>
+        <h2>Order Completed</h2>
+        <p>Thank you for your order! You will receive a confirmation soon.</p>
+        <a asp-action="Index" asp-controller="Order" class="btn btn-primary">Back to Shopping</a>
+    </div>
+</div>
+

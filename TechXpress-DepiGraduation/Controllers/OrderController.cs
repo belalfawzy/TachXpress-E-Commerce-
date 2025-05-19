@@ -18,12 +18,14 @@ namespace TechXpress_DepiGraduation.Controllers
         private readonly IOrderService _orderService;
         private readonly UserManager<AppUser> _userManager;
         private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public OrderController(IProductService productService, ShoppingCart shoppingCart, IOrderService orderService, AppDbContext context, UserManager<AppUser> userManager)
+        public OrderController(IConfiguration configuration,IProductService productService, ShoppingCart shoppingCart, IOrderService orderService, AppDbContext context, UserManager<AppUser> userManager)
         {
             _productService = productService;
             _shoppingCart = shoppingCart;
             _orderService = orderService;
+            _configuration = configuration;
             _context = context;
             _userManager = userManager;
         }
@@ -157,9 +159,10 @@ namespace TechXpress_DepiGraduation.Controllers
                 Total = total,
                 NewAddress = new Addresses()
             };
-
+            ViewBag.PayPalClientId = _configuration["PayPal:clientId"];
             ViewBag.CartItems = cartItems;
             ViewBag.Total = total;
+            
 
             return View(viewModel);
         }

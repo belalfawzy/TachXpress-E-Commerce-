@@ -21,6 +21,7 @@ namespace TechXpress_DepiGraduation.Models
         public decimal Price { get; set; }
         [Required(ErrorMessage = "this Field is required")]
         public List<string> Image { get; set; }
+        [Required(ErrorMessage = "Add at least one Image")]
         public List<string> color { get; set; }
         [Required(ErrorMessage =("this Field is required"))]
         public int CategoryId { get; set; }

@@ -147,48 +147,52 @@ var grandTotal = total + shippingCost;
                 <h5 class="modal-title" id="addAddressModalLabel" style="color: #7B61FF;">Add New Address</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <form id="addAddressForm" asp-action="AddAddress" asp-controller="Account" method="post">
             <div class="modal-body">
-                <form id="addAddressForm" asp-action="AddAddress" asp-controller="Account" method="post">
-                    @Html.AntiForgeryToken()
-                    <div class="mb-3">
-                        <label asp-for="NewAddress.Country" class="form-label">Country</label>
-                        <input type="text" class="form-control" name="NewAddress.Country"
-                               id="NewAddress_Country" placeholder="e.g., Egypt" required>
-                        <span asp-validation-for="NewAddress.Country" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="NewAddress.City" class="form-label">City</label>
-                        <input type="text" class="form-control" name="NewAddress.City"
-                               id="NewAddress_City" placeholder="e.g., Cairo" required>
-                        <span asp-validation-for="NewAddress.City" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="NewAddress.Street" class="form-label">Street</label>
-                        <input type="text" class="form-control" name="NewAddress.Street"
-                               id="NewAddress_Street" placeholder="e.g., Main Street" required>
-                        <span asp-validation-for="NewAddress.Street" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="NewAddress.ZipCode" class="form-label">Zip Code</label>
-                        <input type="text" class="form-control" name="NewAddress.ZipCode"
-                               id="NewAddress_ZipCode" placeholder="e.g., 10001" required>
-                        <span asp-validation-for="NewAddress.ZipCode" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="NewAddress.AddressLine" class="form-label">Address Line</label>
-                        <input type="text" class="form-control" name="NewAddress.AddressLine"
-                               id="NewAddress_AddressLine" placeholder="e.g., 123 Building - Main St. - Region" required>
-                        <span asp-validation-for="NewAddress.AddressLine" class="text-danger"></span>
-                    </div>
-                </form>
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    <label asp-for="NewAddress.Country" class="form-label">Country</label>
+                    <input asp-for="NewAddress.Country" type="text" class="form-control" 
+                           id="NewAddress_Country" placeholder="e.g., Egypt" required/>
+                    <span asp-validation-for="NewAddress.Country" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="NewAddress.City" class="form-label">City</label>
+                    <input asp-for="NewAddress.City" type="text" class="form-control" 
+                           id="NewAddress_City" placeholder="e.g., Cairo" required/>
+                    <span asp-validation-for="NewAddress.City" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="NewAddress.Street" class="form-label">Street</label>
+                    <input type="text" class="form-control" name="NewAddress.Street"
+                           id="NewAddress_Street" placeholder="e.g., Main Street" required>
+                    <span asp-validation-for="NewAddress.Street" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="NewAddress.ZipCode" class="form-label">Zip Code</label>
+                    <input asp-for="NewAddress.ZipCode" type="text" class="form-control" 
+                           id="NewAddress_ZipCode" placeholder="e.g., 10001" required>
+                    <span asp-validation-for="NewAddress.ZipCode" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="NewAddress.AddressLine" class="form-label">Address Line</label>
+                    <input type="text" class="form-control" asp-for="NewAddress.AddressLine"
+                           id="NewAddress_AddressLine" placeholder="e.g., 123 Building - Main St. - Region" required>
+                    <span asp-validation-for="NewAddress.AddressLine" class="text-danger"></span>
+                </div>
             </div>
             <div class="modal-footer">
+               
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" style="background-color: #7B61FF; border: none;" id="saveAddressBtn">Save Address</button>
+                <button type="submit" asp-action="AddAddress" asp-controller="Account" class="btn btn-primary" style="background-color: #7B61FF; border: none;" id="saveAddressBtn">Save Address</button>
             </div>
+            </form>
+        </div>
+        
         </div>
     </div>
-</div>
+
+
 
 @section Scripts {
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -254,31 +258,42 @@ var grandTotal = total + shippingCost;
             $btn.prop('disabled', true);
 
             $.ajax({
-                url: form.attr('action'),
-                type: 'POST Ascyn POST request to add a new address',
-                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                data: form.serialize(),
+                url: form.attr('action'), // Use the form's action URL
+                type: form.attr('method'), // Use the form's method (POST)
+                data: form.serialize(), // Serialize form data
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() // Include anti-forgery token
+                },
                 success: function(response) {
                     if (response.success) {
-                        showMessage('success', 'Address Saved', 'Your address has been saved successfully!');
+                        // Show success message
+                        showMessage('success', 'Address Added', 'Your address has been added successfully!');
+
+                        // Close the modal
                         $('#addAddressModal').modal('hide');
-                        location.reload();
+
+                        // Reload or update the address list dynamically
+                        window.location.reload(); // Simple approach: reload the page
+                        // Alternatively, append the new address to the UI dynamically (see below)
+
+                        $btn.html('Save Address');
+                        $btn.prop('disabled', false);
                     } else {
+                        // Display validation errors
                         displayValidationErrors(response.errors || {});
-                        showMessage('error', response.message || 'Failed to save address');
+                        showMessage('error', 'Error', response.message || 'Failed to add address');
+                        $btn.html('Save Address');
+                        $btn.prop('disabled', false);
                     }
                 },
                 error: function(xhr) {
-                    var errorMsg = xhr.responseJSON?.message || 'An error occurred while saving the address';
-                    showMessage('error', 'Error', errorMsg);
-                },
-                complete: function() {
+                    var errorMessage = xhr.responseJSON?.message || 'An error occurred while adding the address';
+                    showMessage('error', 'Error', errorMessage);
                     $btn.html('Save Address');
                     $btn.prop('disabled', false);
                 }
             });
         });
-
         // Place order
         $('#placeOrderBtn').click(function() {
             const selectedAddressId = $('input[name="selectedAddress"]:checked').val();

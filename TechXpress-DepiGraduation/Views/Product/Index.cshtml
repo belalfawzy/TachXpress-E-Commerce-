@@ -61,7 +61,8 @@
 
                         <div class="card-footer d-flex justify-content-between align-items-center px-3 pb-3">
                             <div class="card-price fw-bold">$@($"{v.Price:0.00}")</div>
-
+                            @if (!User.IsInRole(TechXpress_DepiGraduation.Data.StaticMembers.UserRoles.Admin))
+                            {
                             <div class="d-flex flex-column align-items-center">
                                 <div id="cart-controls-@productId" class="@(qty > 0 ? "d-none" : "")">
                                     <button onclick="addToCart(@productId, event); event.stopPropagation();"
@@ -84,6 +85,7 @@
                                     </button>
                                 </div>
                             </div>
+                            }
                         </div>
 
                     </div>

@@ -53,14 +53,14 @@
                         var orderTotal = orderGroup.Value.Sum(oi => oi.Amount * oi.Price);
 
                         <div class="card mb-3 order-card @(order.Status.ToString().ToLower())"
-                             style="border-radius: 10px; border: none; box-shadow: 0 4px 12px rgba(123, 97, 255, 0.1);">
+                        style="border-radius: 10px; border: none; box-shadow: 0 4px 12px rgba(123, 97, 255, 0.1);">
                             <div class="card-header bg-white" id="heading-@orderGroup.Key"
-                                 style="border-radius: 10px 10px 0 0; border-bottom: 1px solid rgba(123, 97, 255, 0.2);">
+                            style="border-radius: 10px 10px 0 0; border-bottom: 1px solid rgba(123, 97, 255, 0.2);">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <button class="btn btn-link text-decoration-none w-100 text-start"
-                                            type="button" data-bs-toggle="collapse"
-                                            data-bs-target="#collapse-@orderGroup.Key"
-                                            aria-expanded="true" aria-controls="collapse-@orderGroup.Key">
+                                    type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-@orderGroup.Key"
+                                    aria-expanded="true" aria-controls="collapse-@orderGroup.Key">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div>
                                                 <h5 class="mb-1" style="color: #7B61FF;">
@@ -85,7 +85,7 @@
                             </div>
 
                             <div id="collapse-@orderGroup.Key" class="collapse"
-                                 aria-labelledby="heading-@orderGroup.Key" data-bs-parent="#ordersAccordion">
+                            aria-labelledby="heading-@orderGroup.Key" data-bs-parent="#ordersAccordion">
                                 <div class="card-body">
                                     @if (isAdmin)
                                     {
@@ -107,18 +107,18 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <h6 class="fw-bold" style="color: #7B61FF;">Shipping Address</h6>
-                                                
-                                                    @if (order.ShippingAddress != null)
-                                                    {
-                                                        <p class="mb-1">@order.ShippingAddress.AddressLine</p>
-                                                        <p class="mb-1">@order.ShippingAddress.Street, @order.ShippingAddress.City</p>
-                                                        <p class="mb-1">@order.ShippingAddress.Country, @order.ShippingAddress.ZipCode</p>
-                                                    }
-                                                    else
-                                                    {
-                                                        <p class="text-muted">No address information available</p>
-                                                    }
-                                
+
+                                                @if (order.ShippingAddress != null)
+                                                {
+                                                    <p class="mb-1">@order.ShippingAddress.AddressLine</p>
+                                                    <p class="mb-1">@order.ShippingAddress.Street, @order.ShippingAddress.City</p>
+                                                    <p class="mb-1">@order.ShippingAddress.Country, @order.ShippingAddress.ZipCode</p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="text-muted">No address information available</p>
+                                                }
+
                                             </div>
                                         </div>
                                         <hr>
@@ -142,7 +142,7 @@
                                                         <td>
                                                             <div class="d-flex align-items-center">
                                                                 <img src="@(item.Product.Image?.Any() == true ? (item.Product.Image[0].StartsWith("http") ? item.Product.Image[0] : "/images/" + item.Product.Image[0]): "/images/placeholder.jpg")"
-                                                                     class="img-thumbnail me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                                                class="img-thumbnail me-3" style="width: 60px; height: 60px; object-fit: cover;">
                                                                 <div>
                                                                     <h6 class="mb-0">@item.Product?.Name</h6>
                                                                     <small class="text-muted">SKU: @item.Product?.Id</small>
@@ -170,15 +170,20 @@
                                                             <button type="submit" name="status" value="Completed" class="btn btn-success me-2">
                                                                 <i class="bi bi-check-circle"></i> Mark as Completed
                                                             </button>
-                                                            <button type="submit" name="status" value="Cancelled" class="btn btn-danger">
-                                                                <i class="bi bi-x-circle"></i> Cancel Order
-                                                            </button>
+                                                            @if (!(order.PaymentMethod == PaymentMethod.PayPal))
+                                                            {
+                                                                <button type="submit" name="status" value="Cancelled" class="btn btn-danger">
+                                                                    <i class="bi bi-x-circle"></i> Cancel Order
+                                                                </button>
+                                                            }
                                                         }
                                                         else if (order.Status == OrderStatus.Completed)
                                                         {
+                                                             @if (!(order.PaymentMethod == PaymentMethod.PayPal)){
                                                             <button type="submit" name="status" value="Cancelled" class="btn btn-danger">
                                                                 <i class="bi bi-x-circle"></i> Cancel Order
                                                             </button>
+                                                             }
                                                         }
                                                         else if (order.Status == OrderStatus.Cancelled)
                                                         {
@@ -210,10 +215,19 @@
                                                         <span class="me-3">Shipping:</span>
                                                         <span>@(orderTotal >= 200 ? "FREE" : "$10.00")</span>
                                                     </div>
-                                                    <div class="fw-bold fs-5" style="color: #7B61FF;">
-                                                        <span class="me-3">Total:</span>
-                                                        <span>@((orderTotal >= 200 ? orderTotal : orderTotal + 10).ToString("C"))</span>
-                                                    </div>
+                                                    @if (order.PaymentMethod == PaymentMethod.PayPal)
+                                                    {
+                                                        <div class="fw-bold fs-5" style="color: #7B61FF;">
+                                                            <span class="me-3">Paid</span>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="fw-bold fs-5" style="color: #7B61FF;">
+                                                            <span class="me-3">Total:</span>
+                                                            <span>@((orderTotal >= 200 ? orderTotal : orderTotal + 10).ToString("C"))</span>
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>

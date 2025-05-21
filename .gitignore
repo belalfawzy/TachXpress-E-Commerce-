@@ -364,3 +364,4 @@ FodyWeavers.xsd
 TechXpress-DepiGraduation/bin/
 TechXpress-DepiGraduation/obj/
 /TechXpress-DepiGraduation/wwwroot/images/categories
+*.json

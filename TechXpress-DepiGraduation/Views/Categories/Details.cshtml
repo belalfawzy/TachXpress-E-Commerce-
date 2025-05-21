@@ -284,12 +284,13 @@
     <div class="products-section">
         <h3>Products in this Category</h3>
         <div class="products-wrapper">
-            <button class="nav-arrow left" onclick="scrollProducts('left')">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <div class="products-list" id="products-list">
-                @if (Model.Products != null && Model.Products.Any())
-                {
+            @if (Model.Products != null && Model.Products.Any())
+            {
+                
+                <button class="nav-arrow left" onclick="scrollProducts('left')">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="products-list" id="products-list">
                     @foreach (var product in Model.Products)
                     {
                         <div class="product-card">
@@ -308,15 +309,18 @@
                             </a>
                         </div>
                     }
-                }
-                else
-                {
+                </div>
+                <button class="nav-arrow right" onclick="scrollProducts('right')">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            }
+            else
+            {
+               
+                <div class="products-list" id="products-list">
                     <p class="text-muted">No products available in this category.</p>
-                }
-            </div>
-            <button class="nav-arrow right" onclick="scrollProducts('right')">
-                <i class="fas fa-chevron-right"></i>
-            </button>
+                </div>
+            }
         </div>
     </div>
 

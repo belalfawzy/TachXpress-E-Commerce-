@@ -1,4 +1,6 @@
-﻿@{
+﻿@model TechXpress_DepiGraduation.Data.ViewModel.ContactUsViewModel
+
+@{
     Layout = "_Layout";
     ViewData["Title"] = "Contact Us";
 }
@@ -23,22 +25,26 @@
             }
             <form asp-action="Index" asp-controller="Contact" method="post">
                 <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" placeholder="Your Name" required />
+                    <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" placeholder="Your Email" required />
+                    <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label for="subject" class="form-label">Subject</label>
-                    <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
+                    <label asp-for="Subject" class="form-label"></label>
+                    <input asp-for="Subject" class="form-control" placeholder="Subject" required />
+                    <span asp-validation-for="Subject" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label for="message" class="form-label">Message</label>
-                    <textarea class="form-control" id="message" name="message" rows="5" placeholder="Your Message" required></textarea>
+                    <label asp-for="Message" class="form-label"></label>
+                    <textarea asp-for="Message" class="form-control" rows="5" placeholder="Your Message" required></textarea>
+                    <span asp-validation-for="Message" class="text-danger"></span>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-purple">Submit</button> 
             </form>
         </div>
 
@@ -70,71 +76,12 @@
     </div>
 </div>
 
-<style>
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
+@section Styles {
+    <link rel="stylesheet" href="~/css/Contact.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
-    .text-dark {
-        color: #333 !important;
-    }
-
-    .text-primary {
-        color: #6B4E9E !important; 
-    }
-
-    .form-control {
-        border-radius: 8px;
-        border: 1px solid #ced4da;
-        padding: 0.75rem;
-        transition: border-color 0.3s ease;
-    }
-
-        .form-control:focus {
-            border-color: #6B4E9E; 
-            box-shadow: 0 0 5px rgba(107, 78, 158, 0.3); 
-            outline: none;
-        }
-
-    .btn-primary {
-        background-color: #6B4E9E; 
-        border: none;
-        padding: 0.75rem 2rem;
-        border-radius: 25px;
-        transition: all 0.3s ease;
-    }
-
-        .btn-primary:hover {
-            background-color: #5A3E8C; 
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(107, 78, 158, 0.3); 
-        }
-
-    .contact-info i {
-        font-size: 1.2rem;
-    }
-
-    .contact-info a {
-        text-decoration: none;
-        transition: color 0.3s ease;
-    }
-
-        .contact-info a:hover {
-            color: #6B4E9E !important; 
-        }
-
-    /* Responsive Design */
-    @@media (max-width: 768px) {
-        .row
-
-    {
-        flex-direction: column;
-    }
-
-    .col-md-6 {
-        width: 100%;
-    }
-
-    }
-</style>
+}

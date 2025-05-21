@@ -85,63 +85,6 @@ namespace TechXpress_DepiGraduation.Controllers
             return View(category);
         }
 
-        //[HttpPost]
-        //[Authorize(Roles = UserRoles.Admin)]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, IFormFile ImageFile)
-        //{
-        //    var existingCategory = await _categoryservice.GetItemByIdAsync(id);
-        //    if (existingCategory == null)
-        //        return NotFound();
-
-
-        //    existingCategory.Name = Request.Form["Name"];
-        //    existingCategory.Description = Request.Form["Description"];
-
-        //    if (string.IsNullOrEmpty(existingCategory.Name) || existingCategory.Name.Length < 2)
-        //    {
-        //        TempData["ErrorMessage"] = "Name is required and must be at least 2 characters.";
-        //        return View(existingCategory);
-        //    }
-
-        //    if (string.IsNullOrEmpty(existingCategory.Description) || existingCategory.Description.Length < 10)
-        //    {
-        //        TempData["ErrorMessage"] = "Description is required and must be at least 10 characters.";
-        //        return View(existingCategory);
-        //    }
-
-
-        //    if (ImageFile != null && ImageFile.Length > 0)
-        //    {
-        //        if (!string.IsNullOrEmpty(existingCategory.ImageName))
-        //        {
-        //            var oldPath = Path.Combine("wwwroot/images/categories", existingCategory.ImageName);
-        //            if (System.IO.File.Exists(oldPath))
-        //                System.IO.File.Delete(oldPath);
-        //        }
-
-        //        var uploads = Path.Combine("wwwroot/images/categories");
-        //        var uniqueName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
-        //        var path = Path.Combine(uploads, uniqueName);
-
-        //        using (var stream = new FileStream(path, FileMode.Create))
-        //        {
-        //            await ImageFile.CopyToAsync(stream);
-        //        }
-
-        //        existingCategory.ImageName = uniqueName;
-        //    }
-
-
-        //    if (string.IsNullOrEmpty(existingCategory.ImageName))
-        //    {
-        //        TempData["ErrorMessage"] = "Please upload an image.";
-        //        return View(existingCategory);
-        //    }
-
-        //    await _categoryservice.EditAsync(existingCategory);
-        //    return RedirectToAction(nameof(Index));
-        //}
         [HttpPost]
         [Authorize(Roles = UserRoles.Admin)]
         [ValidateAntiForgeryToken]
@@ -199,7 +142,7 @@ namespace TechXpress_DepiGraduation.Controllers
                 return View(existingCategory);
             }
 
-            // Save changes
+           
             await _categoryservice.EditAsync(existingCategory);
             TempData["SuccessMessage"] = "Category updated successfully!";
             return RedirectToAction(nameof(Index));

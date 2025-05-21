@@ -5,16 +5,93 @@
     var userRoles = ViewBag.UserRoles as Dictionary<string, List<string>>;
 }
 
-<div class="container mt-5">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">All Registered Users</h3>
+<style>
+    .users-container {
+        margin-top: 3rem;
+    }
+
+    .users-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(123, 97, 255, 0.1);
+    }
+
+    .users-card-header {
+        background-color: #7B61FF;
+        color: white;
+        border-radius: 10px 10px 0 0;
+        padding: 1rem;
+    }
+
+        .users-card-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+    .users-card-body {
+        padding: 1.5rem;
+    }
+
+    .users-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 0;
+    }
+
+        .users-table th,
+        .users-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .users-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2D2D2D;
+        }
+
+        .users-table tbody tr:hover {
+            background-color: #f9f7ff;
+        }
+
+    .role-badge {
+        display: inline-block;
+        margin-right: 0.5rem;
+        margin-bottom: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        background-color: #6c757d;
+        color: white;
+        border-radius: 12px;
+        font-size: 0.875rem;
+    }
+
+    .no-role {
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    .alert-info {
+        background-color: #e7f1ff;
+        color: #2D2D2D;
+        border: none;
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+    }
+</style>
+
+<div class="users-container container">
+    <div class="users-card">
+        <div class="users-card-header">
+            <h3>All Registered Users</h3>
         </div>
-        <div class="card-body">
+        <div class="users-card-body">
             @if (Model != null && Model.Any())
             {
-                <table class="table table-bordered table-striped">
-                    <thead class="table-light">
+                <table class="users-table table">
+                    <thead>
                         <tr>
                             <th>Full Name</th>
                             <th>User Name</th>
@@ -36,12 +113,12 @@
                                     {
                                         foreach (var role in userRoles[user.Id])
                                         {
-                                            <span>@role</span>
+                                            <span class="role-badge">@role</span>
                                         }
                                     }
                                     else
                                     {
-                                        <span class="text-muted">No role</span>
+                                        <span class="no-role">No role</span>
                                     }
                                 </td>
                             </tr>
@@ -51,7 +128,7 @@
             }
             else
             {
-                <div class="alert alert-info text-center">
+                <div class="alert alert-info">
                     No users found.
                 </div>
             }

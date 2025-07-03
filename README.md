@@ -3,7 +3,7 @@
 A modern **ASP.NET MVC** e-commerce website with secure payments, admin controls, and seamless user experience.
 
 🎨 **UI/UX Design:** [Figma Design File]([https://www.figma.com/file/your-figma-file-link](https://www.figma.com/design/DeV4cXBPbzP36H4lwbxPlL/Techxpress?node-id=90-147)  
-
+🌐 **Live Demo**: http://techxcommerce.runasp.net/
 ---
 
 ## 🚀 Features
